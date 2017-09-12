@@ -2,3 +2,7 @@ env:
   GITHUB_USER=mlenkeit
   PORT=3555 
   PROJECTS_JSON=./test/fixture/projects.json
+  
+language: node_js
+node_js:
+  - "8"
