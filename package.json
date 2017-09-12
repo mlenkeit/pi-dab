@@ -4,7 +4,8 @@
   "description": "Deploy After Build (DAB) to your Raspberry Pi",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha test/unit/**/*.spec.js --recursive && mocha test/system/**/*.spec.js --recursive",
+    "testrunner": "mocha test/**/*.spec.js --recursive --watch"
   },
   "repository": {
     "type": "git",
@@ -16,5 +17,24 @@
   "bugs": {
     "url": "https://github.com/mlenkeit/pi-dab/issues"
   },
-  "homepage": "https://github.com/mlenkeit/pi-dab#readme"
+  "homepage": "https://github.com/mlenkeit/pi-dab#readme",
+  "devDependencies": {
+    "chai": "4.1.1",
+    "chai-as-promised": "7.1.1",
+    "mocha": "3.5.0",
+    "nock": "9.0.14",
+    "rewire": "2.5.2",
+    "sinon": "3.2.1",
+    "sinon-chai": "2.13.0",
+    "supertest": "3.0.0",
+    "tmp": "0.0.33"
+  },
+  "dependencies": {
+    "async": "2.5.0",
+    "body-parser": "1.17.2",
+    "express": "4.15.4",
+    "localtunnel": "1.8.3",
+    "request": "2.81.0",
+    "winston": "2.3.1"
+  }
 }
