@@ -1,0 +1,8 @@
+{
+  "postCheckoutActions": [
+    {
+      "type": "cmd",
+      "cmd": "npm install"
+    }
+  ]
+}
