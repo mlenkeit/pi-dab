@@ -4,6 +4,7 @@ const exec = require('child_process').exec;
 const execSync = require('child_process').execSync;
 const expect = require('chai').expect;
 const fs = require('fs');
+const kill = require('tree-kill');
 const path = require('path');
 const request = require('request');
 
@@ -56,7 +57,7 @@ describe('System Test: Update GitHub Webhook', function() {
   });
   
   afterEach(function() {
-    if (this.cp) this.cp.kill();
+    if (this.cp) kill(this.cp.pid);
   });
   
   it('updates the webhook url on GitHub', function() {
