@@ -57,3 +57,5 @@ typings/
 # dotenv environment variables file
 .env
 
+# generated fixtures
+test/fixture/pi-dab-test
