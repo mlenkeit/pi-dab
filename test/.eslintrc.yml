@@ -1,0 +1,11 @@
+env:
+  mocha: true
+plugins:
+  - mocha
+rules:
+  no-unused-vars:
+    - 1
+  no-console:
+    - off
+  mocha/no-exclusive-tests:
+    - error

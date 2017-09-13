@@ -4,6 +4,7 @@
   "description": "Deploy After Build (DAB) to your Raspberry Pi",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint lib index.js test",
     "test": "mocha test/unit/**/*.spec.js --recursive && mocha test/system/**/*.spec.js --recursive --timeout=10000",
     "testrunner": "mocha test/**/*.spec.js --recursive --watch"
   },
@@ -21,6 +22,8 @@
   "devDependencies": {
     "chai": "4.1.1",
     "chai-as-promised": "7.1.1",
+    "eslint": "4.6.1",
+    "eslint-plugin-mocha": "^4.11.0",
     "mocha": "3.5.0",
     "nock": "9.0.14",
     "rewire": "2.5.2",
