@@ -1,6 +1,7 @@
 'use strict';
 
 const path = require('path');
+const winston = require('winston');
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_USER = process.env.GITHUB_USER;
@@ -23,9 +24,9 @@ const piDab = require('./lib/index')({
 
 piDab.start()
   .then(() => {
-    console.log('Started');
+    winston.log('info', 'Started pi-dab');
   })
   .catch(err => {
-    console.log('Error starting');
+    winston.log('error', 'Failed to start pi-dab', err);
   });
 

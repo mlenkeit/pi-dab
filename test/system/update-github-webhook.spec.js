@@ -9,7 +9,7 @@ const request = require('request');
 const getWebhookUrl = function() {
   return new Promise((resolve, reject) => {
     request.get({
-      url: `https://api.github.com/repos/mlenkeit/pi-dab-test/hooks/16107911`,
+      url: 'https://api.github.com/repos/mlenkeit/pi-dab-test/hooks/16107911',
       json: true,
       auth: {
         username: process.env.GITHUB_USER,
@@ -20,7 +20,7 @@ const getWebhookUrl = function() {
       }
     }, (err, response, body) => {
       if (err) return reject(err);
-      resolve(body.config.url)
+      resolve(body.config.url);
     });
   });
 };
