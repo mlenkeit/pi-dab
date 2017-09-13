@@ -1,21 +1,29 @@
 'use strict';
 
 const chai = require('chai');
+const crypto = require('crypto');
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const request = require('supertest');
 
 chai.use(require('sinon-chai'));
 
+const signPayload = function (secret, payload) {
+  const blob = JSON.stringify(payload);
+  return 'sha1=' + crypto.createHmac('sha1', secret).update(blob).digest('hex');
+};
+
 describe('app', function() {
   
   beforeEach(function() {
     this.updateProject = sinon.stub();
     this.projects = [];
+    this.secret = 's3cret';
     
     this.app = require('./../../lib/app')({
       updateProject: this.updateProject,
-      projects: this.projects
+      projects: this.projects,
+      secret: this.secret
     });
   });
   
@@ -48,10 +56,20 @@ describe('app', function() {
           request(this.app)
             .post('/')
             .send(this.payload)
+            .set('X-Hub-Signature', signPayload(this.secret, this.payload))
             .expect(201)
             .expect(() => {
               expect(this.updateProject).to.be.called;
             })
+            .end(done);
+        });
+        
+        it('responds with 401 when the signature does not match', function(done) {
+          request(this.app)
+            .post('/')
+            .send(this.payload)
+            .set('X-Hub-Signature', 'iamnosignature')
+            .expect(401)
             .end(done);
         });
         
@@ -61,6 +79,7 @@ describe('app', function() {
           request(this.app)
             .post('/')
             .send(this.payload)
+            .set('X-Hub-Signature', signPayload(this.secret, this.payload))
             .expect(500)
             .end(done);
         });
@@ -79,6 +98,7 @@ describe('app', function() {
           request(this.app)
             .post('/')
             .send(this.payload)
+            .set('X-Hub-Signature', signPayload(this.secret, this.payload))
             .expect(201)
             .expect(() => {
               expect(this.updateProject).not.to.be.called;
@@ -113,6 +133,7 @@ describe('app', function() {
           request(this.app)
             .post('/')
             .send(this.payload)
+            .set('X-Hub-Signature', signPayload(this.secret, this.payload))
             .expect(201)
             .expect(() => {
               expect(this.updateProject).not.to.be.called;
@@ -134,6 +155,7 @@ describe('app', function() {
           request(this.app)
             .post('/')
             .send(this.payload)
+            .set('X-Hub-Signature', signPayload(this.secret, this.payload))
             .expect(201)
             .expect(() => {
               expect(this.updateProject).not.to.be.called;
@@ -168,6 +190,7 @@ describe('app', function() {
           request(this.app)
             .post('/')
             .send(this.payload)
+            .set('X-Hub-Signature', signPayload(this.secret, this.payload))
             .expect(201)
             .expect(() => {
               expect(this.updateProject).not.to.be.called;
@@ -189,6 +212,7 @@ describe('app', function() {
           request(this.app)
             .post('/')
             .send(this.payload)
+            .set('X-Hub-Signature', signPayload(this.secret, this.payload))
             .expect(201)
             .expect(() => {
               expect(this.updateProject).not.to.be.called;

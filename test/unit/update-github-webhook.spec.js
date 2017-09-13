@@ -18,11 +18,13 @@ describe('update-github-webhook', function() {
     this.url = 'abc';
     this.githubUser = 'some-user';
     this.githubToken = 'some-token';
+    this.secret = 's3cret';
     
     this.update = require('./../../lib/update-github-webhook')({
       githubToken: this.githubToken,
       githubUser: this.githubUser,
-      projects: this.projects
+      projects: this.projects,
+      secret: this.secret
     });
   });
   
@@ -35,7 +37,8 @@ describe('update-github-webhook', function() {
       .patch(`/repos/${this.project.name}/hooks/${this.project.githubWebhook}`, {
         config: {
           content_type: 'json',
-          url: this.url
+          url: this.url,
+          secret: this.secret
         }
       })
       .basicAuth({

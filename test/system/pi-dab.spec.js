@@ -1,6 +1,7 @@
 'use strict';
 
 const async = require('async');
+const crypto = require('crypto');
 const exec = require('child_process').exec;
 const execSync = require('child_process').execSync;
 const expect = require('chai').expect;
@@ -34,6 +35,12 @@ const startPiDabUntilTunnelOpened = function() {
       env: process.env
     });
     cp.stdout.on('data', function(data) {
+      if(/generated secret/i.test(data.toString())) {
+        const matches = /(.{8}-.{4}-.{4}-.{4}-.{12})/.exec(data.toString());
+        if (matches) {
+          cp.secret = matches[0];
+        }
+      }
       if (/opened/i.test(data.toString())) {
         resolve(cp);
       }
@@ -46,16 +53,22 @@ const wait = function(timeout) {
     setTimeout(resolve, timeout);
   });
 };
-const post = function() {
+const post = function(secret) {
+  const payload = {
+    'id': 1234,
+    'sha': '68098571a7658518bcfbfb7585bd613860dc8728',
+    'name': 'mlenkeit/pi-dab-test',
+    'context': 'continuous-integration/travis-ci/push',
+    'state': 'success'
+  };
+  const payloadSignature = 'sha1=' + crypto.createHmac('sha1', secret).update(JSON.stringify(payload)).digest('hex');
+  
   return new Promise((resolve, reject) => {
     request.post({
       url: `http://localhost:${process.env.PORT}`,
-      json: {
-        'id': 1234,
-        'sha': '68098571a7658518bcfbfb7585bd613860dc8728',
-        'name': 'mlenkeit/pi-dab-test',
-        'context': 'continuous-integration/travis-ci/push',
-        'state': 'success'
+      json: payload,
+      headers: {
+        'X-Hub-Signature': payloadSignature
       }
     }, (err, response, body) => {
       if (err) return reject(err);
@@ -131,7 +144,7 @@ describe('System Test', function() {
       return startPiDabUntilTunnelOpened()
         .then(cp => {
           this.cps.push(cp);
-          return post();
+          return post(cp.secret);
         })
         .then(() => {
           expect(fs.accessSync(filepath), 'new file')
