@@ -1,7 +1,6 @@
 'use strict';
 
 const chai = require('chai');
-const EventEmitter = require('events');
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const request = require('supertest');

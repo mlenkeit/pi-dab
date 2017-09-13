@@ -1,10 +1,8 @@
 'use strict';
 
 const chai = require('chai');
-const EventEmitter = require('events');
 const expect = require('chai').expect;
 const path = require('path');
-const request = require('supertest');
 const sinon = require('sinon');
 
 chai.use(require('chai-as-promised'));
@@ -58,7 +56,7 @@ describe('update-project', function() {
         .then(() => {
           const cmdMatcher = sinon.match('npm install');
           const optMatcher = sinon.match.has('cwd', this.project.dir);
-        expect(this.exec).to.be.calledWith(cmdMatcher, optMatcher); 
+          expect(this.exec).to.be.calledWith(cmdMatcher, optMatcher); 
         });
     });
     

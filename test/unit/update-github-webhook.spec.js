@@ -44,17 +44,17 @@ describe('update-github-webhook', function() {
       })
       .reply(200);
       
-      return this.update(this.url).then(() => {
-        expect(scope.isDone()).to.equal(true);
-      });
+    return this.update(this.url).then(() => {
+      expect(scope.isDone()).to.equal(true);
+    });
   });
   
   it('rejects the promise then update fails', function() {
-    const scope = nock('https://api.github.com')
+    nock('https://api.github.com')
       .patch(`/repos/${this.project.name}/hooks/${this.project.githubWebhook}`)
       .reply(500);
       
-      return expect(this.update(this.url)).to.be.rejected;
+    return expect(this.update(this.url)).to.be.rejected;
   });
   
 });

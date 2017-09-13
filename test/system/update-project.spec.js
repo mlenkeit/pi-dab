@@ -36,7 +36,7 @@ const post = function() {
     }, (err, response, body) => {
       if (err) return reject(err);
       console.log(response.statusCode, body);
-      resolve()
+      resolve();
     });
   });
 };
@@ -49,11 +49,11 @@ describe('System Test: Update GitHub Webhook', function() {
       'git clone https://github.com/mlenkeit/pi-dab-test.git',
       'cd pi-dab-test',
       'git reset --hard f8fe75b0088d0a21804f23fc59f2d926e4d13ec2'
-    ]
+    ];
     execSync(cmds.join(' && '), {
       cwd: path.resolve(__dirname, './../fixture'),
       env: process.env
-    })
+    });
   });
   
   afterEach(function() {
