@@ -35,7 +35,7 @@ const validScriptPathOptions = optionalScriptPathsOptions.
     if (!program[optionName]) {
       try {
         console.log(`No --${scriptName}-path option provided, looking up ${scriptName}...`);
-        const scriptPath = execSync(`which ${scriptName}`);
+        const scriptPath = execSync(`which ${scriptName}`).toString().replace(/\n/g, '');
         program[optionName] = scriptPath;
         console.log(`Using ${scriptName} at ${scriptPath}`);
       } catch (e) {
@@ -80,8 +80,14 @@ exit 0;
 
 fs.writeFileSync('./pi-dab', service);
 
+console.log('');
 console.log('Script file successfully created');
+console.log('');
 console.log('To complete the installation, run');
+console.log('');
 console.log('  cat pi-dab > /etc/init.d/pi-dab');
+console.log('');
 console.log('  chmod +x /etc/init.d/pi-dab');
+console.log('');
 console.log('  sudo update-rc.d pi-dab defaults');
+console.log('');
