@@ -50,9 +50,8 @@ if (!validOptions || !validScriptPathOptions) {
   return program.help();
 }
 
-const servicePath = '/etc/init.d/pi-dab';
 const service = `#!/bin/sh
-#${servicePath}
+#/etc/init.d/pi-dab
 case "$1" in
   start)
     export GITHUB_TOKEN=${program.ghToken}
@@ -79,9 +78,4 @@ esac
 exit 0;
 `;
 
-// write to /etc/init.d
-fs.writeFileSync(servicePath, service);
-fs.chmodSync(servicePath, 755);
-execSync('update-rc.d pi-dab defaults');
-
-console.log(`Service successfully installed to ${servicePath}`);
+fs.writeFileSync('./pi-dab', service);
