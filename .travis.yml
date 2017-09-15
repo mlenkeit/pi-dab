@@ -9,3 +9,4 @@ node_js:
 script:
   - npm run lint
   - npm run test
+  - node scripts/install-svc.js -u max -t 123 -p 3000 -P hello.json --forever-path my-forever --node-path my-node
