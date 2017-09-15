@@ -1,0 +1,21 @@
+{
+  "postCheckoutActions": [{
+    "type": "cmd",
+    "cmd": "npm install --production"
+  }, {
+    "type": "cmd",
+    "cmd": "node scripts/create-svc.js -u $GITHUB_USER -t $GITHUB_TOKEN -p $PORT -P $PROJECTS_JSON"
+  }, {
+    "type": "cmd",
+    "cmd": "sudo cat pi-dab > /etc/init.d/pi-dab"
+  }, {
+    "type": "cmd",
+    "cmd": "sudo chmod +x /etc/init.d/pi-dab"
+  }, {
+    "type": "cmd",
+    "cmd": "sudo update-rc.d pi-dab defaults"
+  }, {
+    "type": "cmd",
+    "cmd": "sudo /etc/init.d/pi-dab restart"
+  }]
+}
