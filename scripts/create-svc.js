@@ -79,3 +79,9 @@ exit 0;
 `;
 
 fs.writeFileSync('./pi-dab', service);
+
+console.log('Script file successfully created');
+console.log('To complete the installation, run');
+console.log('  cat pi-dab > /etc/init.d/pi-dab');
+console.log('  chmod +x /etc/init.d/pi-dab');
+console.log('  sudo update-rc.d pi-dab defaults');
