@@ -59,7 +59,10 @@ const post = function(secret) {
     'sha': '68098571a7658518bcfbfb7585bd613860dc8728',
     'name': 'mlenkeit/pi-dab-test',
     'context': 'continuous-integration/travis-ci/push',
-    'state': 'success'
+    'state': 'success',
+    'branches': [{
+      'name': 'master'
+    }]
   };
   const payloadSignature = 'sha1=' + crypto.createHmac('sha1', secret).update(JSON.stringify(payload)).digest('hex');
   

@@ -37,7 +37,10 @@ describe('app', function() {
           'sha': '5678',
           'name': 'some-user/some-repo',
           'context': 'continuous-integration/travis-ci/push',
-          'state': 'success'
+          'state': 'success',
+          'branches': [{
+            'name': 'master'
+          }]
         };
       });
       
@@ -83,6 +86,25 @@ describe('app', function() {
             .expect(500)
             .end(done);
         });
+        
+        context('when the branch is not master', function() {
+          
+          beforeEach(function() {
+            this.payload.branches[0].name = 'not-master';
+          });
+          
+          it('responds with 201 and does not update the project', function(done) {
+            request(this.app)
+              .post('/')
+              .send(this.payload)
+              .set('X-Hub-Signature', signPayload(this.secret, this.payload))
+              .expect(201)
+              .expect(() => {
+                expect(this.updateProject).not.to.be.called;
+              })
+              .end(done);
+          });
+        });
       });
       
       context('for a non-configured project', function() {
@@ -116,7 +138,10 @@ describe('app', function() {
           'sha': '5678',
           'name': 'some-user/some-repo',
           'context': 'continuous-integration/travis-ci/push',
-          'state': 'pending'
+          'state': 'pending',
+          'branches': [{
+            'name': 'master'
+          }]
         };
       });
       
@@ -173,7 +198,10 @@ describe('app', function() {
           'sha': '5678',
           'name': 'some-user/some-repo',
           'context': 'github/push',
-          'state': 'success'
+          'state': 'success',
+          'branches': [{
+            'name': 'master'
+          }]
         };
       });
       
