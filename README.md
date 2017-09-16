@@ -1,6 +1,6 @@
-# pi-dab [![Build Status](https://travis-ci.org/mlenkeit/pi-dab.svg?branch=master)](https://travis-ci.org/mlenkeit/pi-dab)
+# pi-dab
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/mlenkeit/pi-dab.svg)](https://greenkeeper.io/)
+[![Build Status](https://travis-ci.org/mlenkeit/pi-dab.svg?branch=master)](https://travis-ci.org/mlenkeit/pi-dab) [![Greenkeeper badge](https://badges.greenkeeper.io/mlenkeit/pi-dab.svg)](https://greenkeeper.io/)
 
 > Deploy After Build (DAB) - Continuous Deployment for your Raspberry Pi
 
