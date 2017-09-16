@@ -4,7 +4,7 @@
   "description": "Deploy After Build (DAB) to your Raspberry Pi",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint lib index.js test scripts",
+    "lint": "eslint lib index.js test",
     "start": "node index.js",
     "test": "mocha test/unit/**/*.spec.js --recursive && mocha test/system/**/*.spec.js --recursive --timeout=10000",
     "testrunner": "mocha test/**/*.spec.js --recursive --watch"
