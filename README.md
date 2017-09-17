@@ -20,7 +20,7 @@ npm install --production
 GITHUB_TOKEN=<GITHUB_TOKEN> \ # see config
 GITHUB_USER=<GITHUB_USER> \
 PORT=5000 \
-PROJECTS_JSON=<FILEPATH_TO_PROJECTS> \ # see config
+PROJECTS=<FILEPATH_TO_PROJECTS> \ # see config
 npm test
 ```
 

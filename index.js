@@ -6,10 +6,10 @@ const winston = require('winston');
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_USER = process.env.GITHUB_USER;
 const PORT = parseInt(process.env.PORT, 10);
-const PROJECTS_JSON = process.env.PROJECTS_JSON;
+const PROJECTS = process.env.PROJECTS;
 
-const projectJsonDirname = path.dirname(PROJECTS_JSON);
-const projects = require(PROJECTS_JSON)
+const projectJsonDirname = path.dirname(PROJECTS);
+const projects = require(PROJECTS)
   .map(project => {
     project.dir = path.resolve(projectJsonDirname, project.dir);
     return project;
