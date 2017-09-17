@@ -135,7 +135,7 @@ describe('System Test', function() {
       });
     });
     
-    it('resets the Git working directory and applies .dab.json', function() {
+    it('resets the Git working directory and applies postCheckoutScript', function() {
       const filepath = path.resolve(__dirname, './../fixture/pi-dab-test/HelloWorld.md');
       const dirpath = path.resolve(__dirname, './../fixture/pi-dab-test/node_modules');
       

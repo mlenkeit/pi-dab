@@ -19,10 +19,10 @@ describe('update-project', function() {
     
     this.project = {
       name: 'some-user/some-repo',
-      dir: path.resolve(__dirname, '../fixture/sample-proj')
+      dir: path.resolve(__dirname, '../fixture/sample-proj'),
+      postCheckoutScript: 'pm2 restart'
     };
     this.sha = '7654abc789';
-    this.dabDescriptor = require(path.resolve(this.project.dir, '.dab.json'));
   });
   
   it('fetches the latest changes for the Git repo from remote `origin`', function() {
@@ -54,14 +54,14 @@ describe('update-project', function() {
     it('executes actions of type `cmd`', function() {
       return this.updateProject(this.project, this.sha)
         .then(() => {
-          const cmdMatcher = sinon.match('npm install');
+          const cmdMatcher = sinon.match('pm2 restart');
           const optMatcher = sinon.match.has('cwd', this.project.dir);
           expect(this.exec).to.be.calledWith(cmdMatcher, optMatcher); 
         });
     });
     
     it('rejects the promise when an action fails', function() {
-      this.exec.withArgs(sinon.match('npm install')).rejects();
+      this.exec.withArgs(sinon.match('pm2 restart')).rejects();
       return expect(this.updateProject(this.project, this.sha))
         .to.be.rejected;
     });
