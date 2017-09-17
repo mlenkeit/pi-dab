@@ -1,7 +1,7 @@
 {
   "name": "pi-dab",
   "version": "0.1.0",
-  "description": "Deploy After Build (DAB) to your Raspberry Pi",
+  "description": "Deploy After Build (DAB) - Continuous Deployment for your Raspberry Pi",
   "main": "index.js",
   "scripts": {
     "dab:post-checkout": "npm install --production",
