@@ -11,7 +11,11 @@ chai.use(require('sinon-chai'));
 describe('update-project', function() {
   
   beforeEach(function() {
-    this.exec = sinon.stub().resolves();
+    this.stdio = {
+      stdout: Buffer.from('Hello World'),
+      stderr: Buffer.from('Hello Error')
+    };
+    this.exec = sinon.stub().resolves(this.stdio);
     
     this.updateProject = require('./../../lib/update-project')({
       exec: this.exec
