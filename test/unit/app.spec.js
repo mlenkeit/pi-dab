@@ -250,5 +250,24 @@ describe('app', function() {
       });
     });
     
+    context('when called with other paylods', function() {
+      
+      it('ignores pull request events', function(done) {
+        this.payload = {
+          'action': 'closed'
+        };
+        request(this.app)
+          .post('/')
+          .send(this.payload)
+          .set('X-Hub-Signature', signPayload(this.secret, this.payload))
+          .expect(201)
+          .expect(() => {
+            expect(this.updateProject).not.to.be.called;
+          })
+          .end(done);
+      });
+      
+    });
+    
   });
 });
