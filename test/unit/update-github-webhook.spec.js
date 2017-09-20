@@ -53,10 +53,18 @@ describe('update-github-webhook', function() {
     });
   });
   
-  it('rejects the promise then update fails', function() {
+  it('rejects the promise then update fails with bad status code', function() {
     nock('https://api.github.com')
       .patch(`/repos/${this.project.name}/hooks/${this.project.githubWebhook}`)
       .reply(500);
+      
+    return expect(this.update(this.url)).to.be.rejected;
+  });
+  
+  it('rejects the promise then update fails with an error', function() {
+    nock('https://api.github.com')
+      .patch(`/repos/${this.project.name}/hooks/${this.project.githubWebhook}`)
+      .replyWithError('socket hang up');
       
     return expect(this.update(this.url)).to.be.rejected;
   });
