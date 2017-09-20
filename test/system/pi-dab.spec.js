@@ -49,11 +49,14 @@ const startPiDabUntilTunnelOpened = function() {
     cp.stderr.on('data', reject);
   });
 };
-const wait = function(timeout) {
-  return new Promise(resolve => {
-    setTimeout(resolve, timeout);
-  });
-};
+const wait = timeout => new Promise(resolve => {
+  setTimeout(resolve, timeout);
+});
+const retry = (cont, fn, delay) => fn()
+  .catch((/*err*/) => 
+    cont > 0 
+      ? wait(delay).then(() => retry(cont - 1, fn, delay)) 
+      : Promise.reject('failed'));
 const post = function(secret) {
   const payload = {
     'id': 1234,
@@ -151,10 +154,14 @@ describe('System Test', function() {
           return post(cp.secret);
         })
         .then(() => {
-          // wait for post-checkout action
-          return wait(2000);
-        })
-        .then(() => {
+          return retry(5, () => {
+            return new Promise(resolve => {
+              fs.accessSync(filepath);
+              fs.accessSync(dirpath);
+              resolve();
+            });
+          }, 1000);
+        }).then(() => {
           expect(fs.accessSync(filepath), 'new file')
             .to.be.undefined;
           expect(fs.accessSync(dirpath), 'post checkout action results')
