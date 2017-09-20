@@ -35,6 +35,7 @@ const startPiDabUntilTunnelOpened = function() {
       env: process.env
     });
     cp.stdout.on('data', function(data) {
+      console.log(data);
       if(/generated secret/i.test(data.toString())) {
         const matches = /(.{8}-.{4}-.{4}-.{4}-.{12})/.exec(data.toString());
         if (matches) {
@@ -148,6 +149,10 @@ describe('System Test', function() {
         .then(cp => {
           this.cps.push(cp);
           return post(cp.secret);
+        })
+        .then(() => {
+          // wait for post-checkout action
+          return wait(2000);
         })
         .then(() => {
           expect(fs.accessSync(filepath), 'new file')

@@ -53,37 +53,37 @@ describe('app', function() {
           this.projects.push(this.project);
         });
         
-        it('responds with 201 and updates the project', function(done) {
+        it('responds with 202 and afterwards updates the project', function(done) {
           this.updateProject.withArgs(this.project, this.payload.sha).resolves();
           
           request(this.app)
             .post('/')
             .send(this.payload)
             .set('X-Hub-Signature', signPayload(this.secret, this.payload))
-            .expect(201)
+            .expect(202)
             .expect(() => {
               expect(this.updateProject).to.be.called;
             })
             .end(done);
         });
         
-        it('responds with 401 when the signature does not match', function(done) {
+        it('responds with 400 when the signature does not match', function(done) {
           request(this.app)
             .post('/')
             .send(this.payload)
             .set('X-Hub-Signature', 'iamnosignature')
-            .expect(401)
+            .expect(400)
             .end(done);
         });
         
-        it('responds with 500 when the project update fails', function(done) {
+        it('responds with 202 when the project update fails', function(done) {
           this.updateProject.rejects();
           
           request(this.app)
             .post('/')
             .send(this.payload)
             .set('X-Hub-Signature', signPayload(this.secret, this.payload))
-            .expect(500)
+            .expect(202)
             .end(done);
         });
         
@@ -93,12 +93,12 @@ describe('app', function() {
             this.payload.branches[0].name = 'not-master';
           });
           
-          it('responds with 201 and does not update the project', function(done) {
+          it('responds with 202 and does not update the project', function(done) {
             request(this.app)
               .post('/')
               .send(this.payload)
               .set('X-Hub-Signature', signPayload(this.secret, this.payload))
-              .expect(201)
+              .expect(202)
               .expect(() => {
                 expect(this.updateProject).not.to.be.called;
               })
@@ -116,12 +116,12 @@ describe('app', function() {
           this.projects.push(this.project);
         });
         
-        it('responds with 201 and does not update the project', function(done) {
+        it('responds with 400 and does not update the project', function(done) {
           request(this.app)
             .post('/')
             .send(this.payload)
             .set('X-Hub-Signature', signPayload(this.secret, this.payload))
-            .expect(201)
+            .expect(400)
             .expect(() => {
               expect(this.updateProject).not.to.be.called;
             })
@@ -154,12 +154,12 @@ describe('app', function() {
           this.projects.push(this.project);
         });
         
-        it('responds with 201 and does not update the project', function(done) {
+        it('responds with 202 and does not update the project', function(done) {
           request(this.app)
             .post('/')
             .send(this.payload)
             .set('X-Hub-Signature', signPayload(this.secret, this.payload))
-            .expect(201)
+            .expect(202)
             .expect(() => {
               expect(this.updateProject).not.to.be.called;
             })
@@ -176,12 +176,12 @@ describe('app', function() {
           this.projects.push(this.project);
         });
         
-        it('responds with 201 and does not update the project', function(done) {
+        it('responds with 400 and does not update the project', function(done) {
           request(this.app)
             .post('/')
             .send(this.payload)
             .set('X-Hub-Signature', signPayload(this.secret, this.payload))
-            .expect(201)
+            .expect(400)
             .expect(() => {
               expect(this.updateProject).not.to.be.called;
             })
@@ -214,12 +214,12 @@ describe('app', function() {
           this.projects.push(this.project);
         });
         
-        it('responds with 201 and does not update the project', function(done) {
+        it('responds with 202 and does not update the project', function(done) {
           request(this.app)
             .post('/')
             .send(this.payload)
             .set('X-Hub-Signature', signPayload(this.secret, this.payload))
-            .expect(201)
+            .expect(202)
             .expect(() => {
               expect(this.updateProject).not.to.be.called;
             })
@@ -236,12 +236,12 @@ describe('app', function() {
           this.projects.push(this.project);
         });
         
-        it('responds with 201 and does not update the project', function(done) {
+        it('responds with 400 and does not update the project', function(done) {
           request(this.app)
             .post('/')
             .send(this.payload)
             .set('X-Hub-Signature', signPayload(this.secret, this.payload))
-            .expect(201)
+            .expect(400)
             .expect(() => {
               expect(this.updateProject).not.to.be.called;
             })
@@ -260,7 +260,7 @@ describe('app', function() {
           .post('/')
           .send(this.payload)
           .set('X-Hub-Signature', signPayload(this.secret, this.payload))
-          .expect(201)
+          .expect(400)
           .expect(() => {
             expect(this.updateProject).not.to.be.called;
           })
