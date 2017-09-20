@@ -4,10 +4,14 @@
   "description": "Deploy After Build (DAB) - Continuous Deployment for your Raspberry Pi",
   "main": "index.js",
   "scripts": {
+    "coverage:unit": "istanbul cover _mocha --report cobertura --report html -- test/unit/**/*.spec.js --colors --recursive",
+    "coverage-check":"istanbul check-coverage --statements 95 --functions 95 --lines 95",
     "dab:post-checkout": "npm install --production",
     "lint": "eslint lib index.js test",
     "start": "node index.js",
-    "test": "mocha test/unit/**/*.spec.js --recursive && mocha test/system/**/*.spec.js --recursive --timeout=10000",
+    "test": "npm run test:unit && npm run test:system",
+    "test:unit": "mocha test/unit/**/*.spec.js --recursive",
+    "test:system": "mocha test/system/**/*.spec.js --recursive --timeout=10000",
     "testrunner": "mocha test/**/*.spec.js --recursive --watch"
   },
   "repository": {
@@ -26,6 +30,7 @@
     "chai-as-promised": "7.1.1",
     "eslint": "4.7.1",
     "eslint-plugin-mocha": "^4.11.0",
+    "istanbul": "0.4.5",
     "mocha": "3.5.0",
     "nock": "9.0.17",
     "rewire": "2.5.2",
