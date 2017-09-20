@@ -39,7 +39,8 @@ describe('update-github-webhook', function() {
           content_type: 'json',
           url: this.url,
           secret: this.secret
-        }
+        },
+        events: ['status']
       })
       .basicAuth({
         user: this.githubUser,
