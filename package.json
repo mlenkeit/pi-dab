@@ -33,7 +33,7 @@
     "istanbul": "0.4.5",
     "mocha": "4.0.0",
     "nock": "9.0.22",
-    "rewire": "2.5.2",
+    "rewire": "3.0.0",
     "sinon": "4.0.0",
     "sinon-chai": "2.14.0",
     "supertest": "3.0.0",
