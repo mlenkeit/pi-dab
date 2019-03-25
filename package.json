@@ -37,7 +37,7 @@
     "sinon": "4.0.0",
     "sinon-chai": "2.14.0",
     "supertest": "3.0.0",
-    "tmp": "0.0.33",
+    "tmp": "0.1.0",
     "tree-kill": "1.2.0"
   },
   "dependencies": {
