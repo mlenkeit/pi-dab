@@ -27,6 +27,21 @@ describe('app', function() {
     });
   });
   
+  describe('GET /', function() {
+    it('responds with 200 and project metadata', function(done) {
+      request(this.app)
+        .get('/')
+        .expect(200)
+        .expect(res => {
+          expect(res.text).to.include('pi-dab@0.1.0');
+          // Git commit metadata
+          expect(res.text).to.include('Author:'); 
+          expect(res.text).to.include('Date:'); 
+        })
+        .end(done);
+    });
+  });
+  
   describe('POST /', function() {
     
     context('when called with Travis success state', function() {
