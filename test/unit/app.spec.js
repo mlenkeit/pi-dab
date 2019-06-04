@@ -32,6 +32,7 @@ describe('app', function() {
       request(this.app)
         .get('/')
         .expect(200)
+        .expect('content-type', 'text/plain; charset=utf-8')
         .expect(res => {
           expect(res.text).to.include('pi-dab@0.1.0');
           // Git commit metadata
