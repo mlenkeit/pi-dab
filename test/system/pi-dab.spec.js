@@ -1,16 +1,18 @@
-'use strict';
+/* eslint-env mocha */
+/* eslint-disable no-unused-expressions */
+'use strict'
 
-const async = require('async');
-const crypto = require('crypto');
-const exec = require('child_process').exec;
-const execSync = require('child_process').execSync;
-const expect = require('chai').expect;
-const fs = require('fs');
-const kill = require('tree-kill');
-const path = require('path');
-const request = require('request');
+const async = require('async')
+const crypto = require('crypto')
+const exec = require('child_process').exec
+const execSync = require('child_process').execSync
+const expect = require('chai').expect
+const fs = require('fs')
+const kill = require('tree-kill')
+const path = require('path')
+const request = require('request')
 
-const getWebhookUrl = function() {
+const getWebhookUrl = function () {
   return new Promise((resolve, reject) => {
     request.get({
       url: 'https://api.github.com/repos/mlenkeit/pi-dab-test/hooks/16107911',
@@ -23,41 +25,41 @@ const getWebhookUrl = function() {
         'User-Agent': 'pi-dab'
       }
     }, (err, response, body) => {
-      if (err) return reject(err);
-      resolve(body.config.url);
-    });
-  });
-};
-const startPiDabUntilTunnelOpened = function() {
+      if (err) return reject(err)
+      resolve(body.config.url)
+    })
+  })
+}
+const startPiDabUntilTunnelOpened = function () {
   return new Promise((resolve, reject) => {
     const cp = exec('node index.js', {
       cwd: path.resolve(__dirname, './../..'),
       env: process.env
-    });
-    cp.stdout.on('data', function(data) {
-      console.log(data);
-      if(/generated secret/i.test(data.toString())) {
-        const matches = /(.{8}-.{4}-.{4}-.{4}-.{12})/.exec(data.toString());
+    })
+    cp.stdout.on('data', function (data) {
+      console.log(data)
+      if (/generated secret/i.test(data.toString())) {
+        const matches = /(.{8}-.{4}-.{4}-.{4}-.{12})/.exec(data.toString())
         if (matches) {
-          cp.secret = matches[0];
+          cp.secret = matches[0]
         }
       }
       if (/opened/i.test(data.toString())) {
-        resolve(cp);
+        resolve(cp)
       }
-    });
-    cp.stderr.on('data', reject);
-  });
-};
+    })
+    cp.stderr.on('data', reject)
+  })
+}
 const wait = timeout => new Promise(resolve => {
-  setTimeout(resolve, timeout);
-});
+  setTimeout(resolve, timeout)
+})
 const retry = (cont, fn, delay) => fn()
-  .catch((/*err*/) => 
-    cont > 0 
-      ? wait(delay).then(() => retry(cont - 1, fn, delay)) 
-      : Promise.reject('failed'));
-const post = function(secret) {
+  .catch((/* err */) =>
+    cont > 0
+      ? wait(delay).then(() => retry(cont - 1, fn, delay))
+      : Promise.reject(new Error('failed')))
+const post = function (secret) {
   const payload = {
     'id': 1234,
     'sha': '68098571a7658518bcfbfb7585bd613860dc8728',
@@ -67,9 +69,9 @@ const post = function(secret) {
     'branches': [{
       'name': 'master'
     }]
-  };
-  const payloadSignature = 'sha1=' + crypto.createHmac('sha1', secret).update(JSON.stringify(payload)).digest('hex');
-  
+  }
+  const payloadSignature = 'sha1=' + crypto.createHmac('sha1', secret).update(JSON.stringify(payload)).digest('hex')
+
   return new Promise((resolve, reject) => {
     request.post({
       url: `http://localhost:${process.env.PORT}`,
@@ -78,96 +80,91 @@ const post = function(secret) {
         'X-Hub-Signature': payloadSignature
       }
     }, (err, response, body) => {
-      if (err) return reject(err);
-      console.log(response.statusCode, body);
-      resolve();
-    });
-  });
-};
+      if (err) return reject(err)
+      console.log(response.statusCode, body)
+      resolve()
+    })
+  })
+}
 
-describe('System Test', function() {
-  
-  beforeEach(function() {
-    this.cps = [];
-  });
-  
-  afterEach(function(done) {
-    async.each(this.cps, function(cp, cb) {
-      var pid = cp.pid;
-      kill(pid, 'SIGKILL', function(/*err*/) {
-        cb();
-      });
-    }, done);
-  });
-  
-  describe('update GitHub wekhook', function() {
-  
-    it('changes the webhook url once started', function() {
+describe('System Test', function () {
+  beforeEach(function () {
+    this.cps = []
+  })
+
+  afterEach(function (done) {
+    async.each(this.cps, function (cp, cb) {
+      var pid = cp.pid
+      kill(pid, 'SIGKILL', function (/* err */) {
+        cb()
+      })
+    }, done)
+  })
+
+  describe('update GitHub wekhook', function () {
+    it('changes the webhook url once started', function () {
       return getWebhookUrl()
         .then(initialUrl => {
-          console.log('Initial url', initialUrl);
-          
+          console.log('Initial url', initialUrl)
+
           return startPiDabUntilTunnelOpened()
             .then(cp => {
-              this.cps.push(cp);
-              return wait(1500);
+              this.cps.push(cp)
+              return wait(1500)
             })
             .then(() => {
-              return getWebhookUrl();
+              return getWebhookUrl()
             })
             .then(updatedUrl => {
-              console.log('Updated url', updatedUrl);
-              expect(updatedUrl).not.to.equal(initialUrl);
-            });
-        });
-    });
-    
-  });
-  
-  describe('update project after build', function() {
-    
-    beforeEach(function() {
+              console.log('Updated url', updatedUrl)
+              expect(updatedUrl).not.to.equal(initialUrl)
+            })
+        })
+    })
+  })
+
+  describe('update project after build', function () {
+    beforeEach(function () {
       const cmds = [
         'rm -rf pi-dab-test',
         'git clone https://github.com/mlenkeit/pi-dab-test.git',
         'cd pi-dab-test',
         'git reset --hard f8fe75b0088d0a21804f23fc59f2d926e4d13ec2'
-      ];
+      ]
       execSync(cmds.join(' && '), {
         cwd: path.resolve(__dirname, './../fixture'),
         env: process.env
-      });
-    });
-    
-    it('resets the Git working directory and applies postCheckoutScript', function() {
-      const filepath = path.resolve(__dirname, './../fixture/pi-dab-test/HelloWorld.md');
-      const dirpath = path.resolve(__dirname, './../fixture/pi-dab-test/node_modules');
-      
+      })
+    })
+
+    it('resets the Git working directory and applies postCheckoutScript', function () {
+      const filepath = path.resolve(__dirname, './../fixture/pi-dab-test/HelloWorld.md')
+      const dirpath = path.resolve(__dirname, './../fixture/pi-dab-test/node_modules')
+
       expect(() => fs.accessSync(filepath), 'new file does not exist')
-        .to.throw();
+        .to.throw()
       expect(() => fs.accessSync(dirpath), 'post checkout action results do not exist')
-        .to.throw();
-      
+        .to.throw()
+
       return startPiDabUntilTunnelOpened()
         .then(cp => {
-          this.cps.push(cp);
-          return post(cp.secret);
+          this.cps.push(cp)
+          return post(cp.secret)
         })
         .then(() => {
           return retry(5, () => {
             return new Promise(resolve => {
-              fs.accessSync(filepath);
-              fs.accessSync(dirpath);
-              resolve();
-            });
-          }, 1000);
+              fs.accessSync(filepath)
+              fs.accessSync(dirpath)
+              resolve()
+            })
+          }, 1000)
         }).then(() => {
           expect(fs.accessSync(filepath), 'new file')
-            .to.be.undefined;
+            .to.be.undefined
           expect(fs.accessSync(dirpath), 'post checkout action results')
-            .to.be.undefined;
-        });
-    });
-  });
-  
-});
+            .to.be.undefined
+        })
+    })
+  })
+})
