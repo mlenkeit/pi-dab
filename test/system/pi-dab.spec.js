@@ -3,7 +3,9 @@
 'use strict'
 
 const async = require('async')
+const check = require('check-types')
 const crypto = require('crypto')
+const dotenv = require('dotenv')
 const exec = require('child_process').exec
 const execSync = require('child_process').execSync
 const expect = require('chai').expect
@@ -11,30 +13,35 @@ const fs = require('fs')
 const kill = require('tree-kill')
 const path = require('path')
 const request = require('request')
+const rp = require('request-promise-native')
+const tmp = require('tmp')
 
-const getWebhookUrl = function () {
-  return new Promise((resolve, reject) => {
-    request.get({
-      url: 'https://api.github.com/repos/mlenkeit/pi-dab-test/hooks/16107911',
-      json: true,
-      auth: {
-        username: process.env.GITHUB_USER,
-        password: process.env.GITHUB_TOKEN
-      },
-      headers: {
-        'User-Agent': 'pi-dab'
-      }
-    }, (err, response, body) => {
-      if (err) return reject(err)
-      resolve(body.config.url)
-    })
+const obfuscateString = require('./../../lib/obfuscate-string')
+
+const getWebhookUrl = function ({ GITHUB_USER, GITHUB_TOKEN }) {
+  check.assert.nonEmptyString(GITHUB_USER, 'env var GITHUB_USER empty')
+  check.assert.nonEmptyString(GITHUB_TOKEN, 'env var GITHUB_TOKEN empty')
+  console.log(`test: retrieving webhook url as GitHub user ${GITHUB_USER} with token ${obfuscateString(GITHUB_TOKEN)}`)
+
+  const WEBHOOK_ID = 16107911
+  return rp.get({
+    url: `https://api.github.com/repos/mlenkeit/pi-dab-test/hooks/${WEBHOOK_ID}`,
+    json: true,
+    auth: {
+      username: GITHUB_USER,
+      password: GITHUB_TOKEN
+    },
+    headers: {
+      'User-Agent': 'pi-dab'
+    },
+    transform: body => body.config.url
   })
 }
-const startPiDabUntilTunnelOpened = function () {
+const startPiDabUntilTunnelOpened = function ({ env }) {
   return new Promise((resolve, reject) => {
     const cp = exec('node index.js', {
       cwd: path.resolve(__dirname, './../..'),
-      env: process.env
+      env: env
     })
     cp.stdout.on('data', function (data) {
       console.log(data)
@@ -51,14 +58,14 @@ const startPiDabUntilTunnelOpened = function () {
     cp.stderr.on('data', reject)
   })
 }
-const wait = timeout => new Promise(resolve => {
-  setTimeout(resolve, timeout)
-})
-const retry = (cont, fn, delay) => fn()
+const wait = timeout => new Promise(resolve => setTimeout(resolve, timeout))
+
+const retry = (tries, fn, delay, tryCounter = 0) => fn()
   .catch((/* err */) =>
-    cont > 0
-      ? wait(delay).then(() => retry(cont - 1, fn, delay))
-      : Promise.reject(new Error('failed')))
+    tries > tryCounter
+      ? wait(delay).then(() => retry(tries, fn, delay, tryCounter + 1))
+      : Promise.reject(new Error(`Operation failed after re-trying ${tries} times`)))
+
 const post = function (secret) {
   const payload = {
     'id': 1234,
@@ -88,8 +95,18 @@ const post = function (secret) {
 }
 
 describe('System Test', function () {
+  // before(function() {
+  //   check.assert.nonEmptyString(process.env.GITHUB_USER, 'env var GITHUB_USER empty')
+  //   check.assert.nonEmptyString(process.env.GITHUB_TOKEN, 'env var GITHUB_TOKEN empty')
+  // })
+
   beforeEach(function () {
     this.cps = []
+
+    dotenv.config({ path: path.resolve(__dirname, './../../.env.test') })
+    this.env = Object.assign({}, process.env)
+    this.env.PROJECTS = path.resolve(__dirname, './../fixture/projects2.js')
+    this.env.PROJECTS_ROOT_DIR = tmp.dirSync().name
   })
 
   afterEach(function (done) {
@@ -103,23 +120,28 @@ describe('System Test', function () {
 
   describe('update GitHub wekhook', function () {
     it('changes the webhook url once started', function () {
-      return getWebhookUrl()
-        .then(initialUrl => {
-          console.log('Initial url', initialUrl)
-
-          return startPiDabUntilTunnelOpened()
-            .then(cp => {
-              this.cps.push(cp)
-              return wait(1500)
-            })
-            .then(() => {
-              return getWebhookUrl()
-            })
-            .then(updatedUrl => {
-              console.log('Updated url', updatedUrl)
-              expect(updatedUrl).not.to.equal(initialUrl)
-            })
+      return getWebhookUrl({
+        GITHUB_USER: this.env.GITHUB_USER,
+        GITHUB_TOKEN: this.env.GITHUB_TOKEN
+      }).then(initialUrl => {
+        console.log(`test: initial webhook url on pi-dab-test: ${initialUrl}`)
+        return startPiDabUntilTunnelOpened({
+          env: this.env
+        }).then(cp => {
+          this.cps.push(cp)
+          return wait(1500)
         })
+          .then(() => {
+            return getWebhookUrl({
+              GITHUB_USER: this.env.GITHUB_USER,
+              GITHUB_TOKEN: this.env.GITHUB_TOKEN
+            })
+          })
+          .then(updatedUrl => {
+            console.log(`test: updated webhook url on pi-dab-test: ${updatedUrl}`)
+            expect(updatedUrl).not.to.equal(initialUrl)
+          })
+      })
     })
   })
 
@@ -138,15 +160,15 @@ describe('System Test', function () {
     })
 
     it('resets the Git working directory and applies postCheckoutScript', function () {
-      const filepath = path.resolve(__dirname, './../fixture/pi-dab-test/HelloWorld.md')
-      const dirpath = path.resolve(__dirname, './../fixture/pi-dab-test/node_modules')
+      const filepath = path.resolve(this.env.PROJECTS_ROOT_DIR, './mlenkeit/pi-dab-test/HelloWorld.md')
+      const dirpath = path.resolve(this.env.PROJECTS_ROOT_DIR, './mlenkeit/pi-dab-test/node_modules')
 
       expect(() => fs.accessSync(filepath), 'new file does not exist')
         .to.throw()
       expect(() => fs.accessSync(dirpath), 'post checkout action results do not exist')
         .to.throw()
 
-      return startPiDabUntilTunnelOpened()
+      return startPiDabUntilTunnelOpened({ env: this.env })
         .then(cp => {
           this.cps.push(cp)
           return post(cp.secret)
