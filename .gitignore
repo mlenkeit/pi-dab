@@ -59,6 +59,7 @@ typings/
 
 # generated fixtures
 test/fixture/pi-dab-test
+test/fixture/pi-dab-test.git
 
 # local test files with pre-set environment variables
 start.sh
