@@ -8,6 +8,7 @@
     "coverage-check": "istanbul check-coverage --statements 95 --functions 95 --lines 95",
     "dab:post-checkout": "npm install --production",
     "fix": "standard index.js 'lib/**/*.js' 'test/**/*.js' --fix --verbose | snazzy",
+    "fixture": "git clone https://github.com/mlenkeit/pi-dab-test.git test/fixture/pi-dab-test.git --mirror",
     "lint": "standard index.js 'lib/**/*.js' 'test/**/*.js' --verbose | snazzy",
     "start": "node index.js",
     "test": "npm run test:unit && npm run test:system",
@@ -31,6 +32,7 @@
     "@commitlint/config-conventional": "8.0.0",
     "chai": "4.1.1",
     "chai-as-promised": "7.1.1",
+    "chai-fs": "2.0.0",
     "eslint-plugin-mocha": "4.11.0",
     "husky": "2.3.0",
     "istanbul": "0.4.5",
@@ -57,7 +59,9 @@
     "winston": "2.4.0"
   },
   "standard": {
-    "plugins": ["mocha"]
+    "plugins": [
+      "mocha"
+    ]
   },
   "husky": {
     "hooks": {
