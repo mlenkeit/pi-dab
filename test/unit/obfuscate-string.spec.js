@@ -5,7 +5,7 @@ const expect = require('chai').expect
 
 const obfuscateString = require('./../../lib/obfuscate-string')
 
-describe.only('obfuscate-string', function () {
+describe('obfuscate-string', function () {
   it('keeps the last n characters', function () {
     const inp = '123456789'
     const keep = 4
