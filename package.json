@@ -37,7 +37,7 @@
     "eslint-plugin-mocha": "4.11.0",
     "husky": "2.3.0",
     "istanbul": "0.4.5",
-    "lint-staged": "8.1.7",
+    "lint-staged": "8.2.0",
     "mocha": "4.0.0",
     "nock": "9.0.22",
     "rewire": "2.5.2",
