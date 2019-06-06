@@ -2,11 +2,14 @@ env:
   GITHUB_USER=mlenkeit
   PORT=3555 
   PROJECTS=./test/fixture/projects.js
-  
+services:
+  - docker  
 language: node_js
 node_js:
   - "8"
 script:
+  - docker --version
+  - docker-compose --version
   - npm run lint
   - npm run fixture
   - npm run coverage:unit
