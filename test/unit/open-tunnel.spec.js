@@ -35,7 +35,7 @@ describe('open-tunnel', function () {
       beforeEach(function () {
         this.localtunnel.reset()
         this.onOpen.reset()
-        this.localtunnel.tunnelEvents.emit('error', new Error())
+        this.localtunnel.tunnel.emit('error', new Error())
       })
 
       it('opens a new tunnel on the given port', function () {
@@ -45,13 +45,17 @@ describe('open-tunnel', function () {
       it('invokes the callback with the url', function () {
         expect(this.onOpen).to.be.calledWith(this.localtunnel.tunnel.url)
       })
+
+      it('closes the potentially open tunnel', function () {
+        expect(this.localtunnel.tunnel.close).to.have.callCount(1)
+      })
     })
 
     context('when close event is emitted', function () {
       beforeEach(function () {
         this.localtunnel.reset()
         this.onOpen.reset()
-        this.localtunnel.tunnelEvents.emit('close')
+        this.localtunnel.tunnel.emit('close')
       })
 
       it('opens a new tunnel on the given port', function () {
