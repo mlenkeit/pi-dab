@@ -1,0 +1,39 @@
+version: '3'
+services:
+  main:
+    build:
+      context: .
+    restart: always
+    privileged: true
+    ports:
+      - "${PORT}:${PORT}"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - projects:/usr/src/share
+      # - ./_projects:/usr/src/projects
+    environment:
+      PORT: '${PORT}'
+      GITHUB_USER: '${GITHUB_USER}'
+      GITHUB_TOKEN: '${GITHUB_TOKEN}'
+      PROJECTS: '/usr/src/projects/mlenkeit/pi-dab/projects.json'
+      PROJECTS_ROOT_DIR: '/usr/src/projects'
+  launcher:
+    build:
+      context: .
+      dockerfile: Dockerfile-launcher
+    restart: always
+    privileged: true
+    working_dir: /usr/src/app
+    command: bash -c "npm install --production && node launcher/launcher.js"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - projects:/usr/src/share
+    environment:
+      PORT: '${PORT}'
+      GITHUB_USER: '${GITHUB_USER}'
+      GITHUB_TOKEN: '${GITHUB_TOKEN}'
+      PROJECTS: '/usr/src/projects/mlenkeit/pi-dab/projects.json'
+      PROJECTS_ROOT_DIR: '/usr/src/projects'
+      PI_DAB_DIR: '/usr/src/share/pi-dab'
+volumes:
+  projects:
