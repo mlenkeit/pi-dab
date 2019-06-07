@@ -54,7 +54,7 @@ describe('update-project', function () {
     it('fetches the latest changes for the Git repo from remote `origin`', function () {
       return this.updateProject(this.project, this.sha)
         .then(() => {
-          const cmdMatcher = sinon.match('git fetch origin')
+          const cmdMatcher = sinon.match(`git fetch ${this.project.cloneUrl}`)
           const optMatcher = sinon.match.has('cwd', this.projectsDir)
           expect(this.exec).to.be.calledWith(cmdMatcher, optMatcher)
         })
