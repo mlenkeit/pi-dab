@@ -15,6 +15,7 @@ script:
   - npm run coverage:unit
   - npm run coverage-check
   - npm run test:system
+  - docker-compose build
   - npm run test:docker
 cache:
   directories:
