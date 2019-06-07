@@ -4,6 +4,8 @@ env:
   PROJECTS=./test/fixture/projects.js
 services:
   - docker  
+git:
+  depth: false # otherwise, e2e tests might not find certain commits to checkout
 language: node_js
 node_js:
   - "12.4.0"
