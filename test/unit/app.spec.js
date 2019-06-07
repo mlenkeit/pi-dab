@@ -40,6 +40,19 @@ describe('app', function () {
     })
   })
 
+  describe('GET /hello', function () {
+    it('responds with 200 and hello world', function (done) {
+      request(this.app)
+        .get('/hello')
+        .expect(200)
+        .expect('content-type', 'text/plain; charset=utf-8')
+        .expect(res => {
+          expect(res.text).to.equal('hello world')
+        })
+        .end(done)
+    })
+  })
+
   describe('POST /', function () {
     context('when called with Travis success state', function () {
       beforeEach(function () {
