@@ -49,7 +49,7 @@ const retry = (tries, fn, delay, tryCounter = 0) => fn()
 const post = function (secret, port) {
   const payload = {
     'id': 1234,
-    'sha': '4c0e337555e64622e752f6ca51d79041ffc7f37d',
+    'sha': '87ff97c10086f63a8c8f78d18a0049e9ea47b8b6',
     'name': 'mlenkeit/pi-dab',
     'context': 'continuous-integration/travis-ci/push',
     'state': 'success',
