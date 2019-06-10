@@ -13,6 +13,8 @@ const request = require('request')
 const rp = require('request-promise-native')
 const tmp = require('tmp')
 
+const wait = require('./../util/wait')
+
 const getPortFromCompose = () => require('./../../lib/exec')('docker-compose exec -T main bash -c "echo \\$PORT"', {
   cwd: path.resolve(__dirname, './../..')
 }).then(stdio => parseInt(stdio.stdout.trim(), 10))
@@ -38,13 +40,6 @@ const startPiDabUntilTunnelOpened = function ({ env }) {
     // cp.stderr.on('data', reject)
   })
 }
-const wait = timeout => new Promise(resolve => setTimeout(resolve, timeout))
-
-const retry = (tries, fn, delay, tryCounter = 0) => fn()
-  .catch((/* err */) =>
-    tries > tryCounter
-      ? wait(delay).then(() => retry(tries, fn, delay, tryCounter + 1))
-      : Promise.reject(new Error(`Operation failed after re-trying ${tries} times`)))
 
 const post = function (secret, port) {
   const payload = {
