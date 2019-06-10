@@ -7,7 +7,10 @@ const winston = require('winston')
 const obfuscateString = require('./lib/obfuscate-string')
 
 const logger = winston.createLogger({
-  format: winston.format.simple(),
+  format: winston.format.combine(
+    winston.format.splat(),
+    winston.format.simple()
+  ),
   transports: [
     new winston.transports.Console()
   ]
