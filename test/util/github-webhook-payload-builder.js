@@ -24,6 +24,18 @@ module.exports = () => {
       builder._payload.name = repo
       return builder
     },
+    state: state => {
+      builder._payload.state = state
+      return builder
+    },
+    branch: branch => {
+      builder._payload.branches[0].name = branch
+      return builder
+    },
+    payload: payload => {
+      builder._payload = payload
+      return builder
+    },
     build: ({ secret }) => {
       const payload = builder._payload
       const signature = 'sha1=' + crypto.createHmac('sha1', secret).update(JSON.stringify(payload)).digest('hex')
