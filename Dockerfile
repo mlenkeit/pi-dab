@@ -38,4 +38,4 @@ COPY index.js /usr/src/projects/mlenkeit/pi-dab/index.js
 COPY projects.json /usr/src/projects/mlenkeit/pi-dab/projects.json
 
 EXPOSE 3000
-CMD [ "npm", "start" ]
+CMD [ "node", "index.js" ]
