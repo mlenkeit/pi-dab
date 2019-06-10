@@ -25,7 +25,7 @@ const getPortFromCompose = () => exec('docker-compose exec -T main bash -c "echo
 
 const removeDockerComposeContainers = () => {
   console.log('test: removing compose containers...')
-  return retry(5, () => exec('docker-compose down', {
+  return retry(5, () => exec('docker-compose stop && docker-compose down', {
     cwd: PI_DAB_ROOT_DIR
   }), 1000)
     .then(() => console.log('test: removed compose containers'))
