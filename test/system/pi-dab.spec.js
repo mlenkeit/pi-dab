@@ -4,7 +4,6 @@
 
 const async = require('async')
 const check = require('check-types')
-const crypto = require('crypto')
 const dotenv = require('dotenv')
 const exec = require('child_process').exec
 const execSync = require('child_process').execSync
@@ -12,11 +11,12 @@ const expect = require('chai').expect
 const fs = require('fs')
 const kill = require('tree-kill')
 const path = require('path')
-const request = require('request')
 const rp = require('request-promise-native')
 const tmp = require('tmp')
 
 const obfuscateString = require('./../../lib/obfuscate-string')
+const payloadBuilder = require('./../util/github-webhook-payload-builder')
+const webhookSimulator = require('./../util/github-webhook-simulator')
 const retry = require('./../util/retry')
 const wait = require('./../util/wait')
 
@@ -61,40 +61,7 @@ const startPiDabUntilTunnelOpened = function ({ env }) {
   })
 }
 
-const post = function (secret) {
-  const payload = {
-    'id': 1234,
-    'sha': '68098571a7658518bcfbfb7585bd613860dc8728',
-    'name': 'mlenkeit/pi-dab-test',
-    'context': 'continuous-integration/travis-ci/push',
-    'state': 'success',
-    'branches': [{
-      'name': 'master'
-    }]
-  }
-  const payloadSignature = 'sha1=' + crypto.createHmac('sha1', secret).update(JSON.stringify(payload)).digest('hex')
-
-  return new Promise((resolve, reject) => {
-    request.post({
-      url: `http://localhost:${process.env.PORT}`,
-      json: payload,
-      headers: {
-        'X-Hub-Signature': payloadSignature
-      }
-    }, (err, response, body) => {
-      if (err) return reject(err)
-      console.log(response.statusCode, body)
-      resolve()
-    })
-  })
-}
-
 describe('System Test', function () {
-  // before(function() {
-  //   check.assert.nonEmptyString(process.env.GITHUB_USER, 'env var GITHUB_USER empty')
-  //   check.assert.nonEmptyString(process.env.GITHUB_TOKEN, 'env var GITHUB_TOKEN empty')
-  // })
-
   beforeEach(function () {
     this.cps = []
 
@@ -166,8 +133,15 @@ describe('System Test', function () {
       return startPiDabUntilTunnelOpened({ env: this.env })
         .then(cp => {
           this.cps.push(cp)
-          return post(cp.secret)
+          return cp.secret
         })
+        .then(secret => webhookSimulator({ port: this.env.PORT })
+          .send(payloadBuilder()
+            .contextTravisPush()
+            .sha('68098571a7658518bcfbfb7585bd613860dc8728')
+            .repo('mlenkeit/pi-dab-test')
+            .build({ secret }))
+        )
         .then(() => {
           return retry(5, () => {
             return new Promise(resolve => {
