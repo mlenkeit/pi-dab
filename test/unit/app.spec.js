@@ -3,17 +3,13 @@
 'use strict'
 
 const chai = require('chai')
-const crypto = require('crypto')
 const expect = require('chai').expect
 const sinon = require('sinon')
 const request = require('supertest')
 
 chai.use(require('sinon-chai'))
 
-const signPayload = function (secret, payload) {
-  const blob = JSON.stringify(payload)
-  return 'sha1=' + crypto.createHmac('sha1', secret).update(blob).digest('hex')
-}
+const payloadBuilder = require('./../util/github-webhook-payload-builder')
 
 describe('app', function () {
   beforeEach(function () {
@@ -47,16 +43,12 @@ describe('app', function () {
   describe('POST /', function () {
     context('when called with Travis success state', function () {
       beforeEach(function () {
-        this.payload = {
-          'id': 1234,
-          'sha': '5678',
-          'name': 'some-user/some-repo',
-          'context': 'continuous-integration/travis-ci/push',
-          'state': 'success',
-          'branches': [{
-            'name': 'master'
-          }]
-        }
+        this.payloadBuilderContext = payloadBuilder()
+          .contextTravisPush()
+          .sha('5678')
+          .repo('some-user/some-repo')
+        this.payloadBuild = this.payloadBuilderContext.build({ secret: this.secret })
+        this.payload = this.payloadBuild.payload
       })
 
       context('for a configured project', function () {
@@ -73,7 +65,7 @@ describe('app', function () {
           request(this.app)
             .post('/')
             .send(this.payload)
-            .set('X-Hub-Signature', signPayload(this.secret, this.payload))
+            .set(this.payloadBuild.signatureHeader)
             .expect(202)
             .expect(() => {
               expect(this.updateProject).to.be.called
@@ -96,21 +88,23 @@ describe('app', function () {
           request(this.app)
             .post('/')
             .send(this.payload)
-            .set('X-Hub-Signature', signPayload(this.secret, this.payload))
+            .set(this.payloadBuild.signatureHeader)
             .expect(202)
             .end(done)
         })
 
         context('when the branch is not master', function () {
           beforeEach(function () {
-            this.payload.branches[0].name = 'not-master'
+            this.payloadBuilderContext.branch('not-master')
+            this.payloadBuild = this.payloadBuilderContext.build({ secret: this.secret })
+            this.payload = this.payloadBuild.payload
           })
 
           it('responds with 202 and does not update the project', function (done) {
             request(this.app)
               .post('/')
               .send(this.payload)
-              .set('X-Hub-Signature', signPayload(this.secret, this.payload))
+              .set(this.payloadBuild.signatureHeader)
               .expect(202)
               .expect(() => {
                 expect(this.updateProject).not.to.be.called
@@ -132,7 +126,7 @@ describe('app', function () {
           request(this.app)
             .post('/')
             .send(this.payload)
-            .set('X-Hub-Signature', signPayload(this.secret, this.payload))
+            .set(this.payloadBuild.signatureHeader)
             .expect(400)
             .expect(() => {
               expect(this.updateProject).not.to.be.called
@@ -144,16 +138,13 @@ describe('app', function () {
 
     context('when called with Travis state other than success', function () {
       beforeEach(function () {
-        this.payload = {
-          'id': 1234,
-          'sha': '5678',
-          'name': 'some-user/some-repo',
-          'context': 'continuous-integration/travis-ci/push',
-          'state': 'pending',
-          'branches': [{
-            'name': 'master'
-          }]
-        }
+        this.payloadBuilderContext = payloadBuilder()
+          .contextTravisPush()
+          .sha('5678')
+          .repo('some-user/some-repo')
+          .state('pending')
+        this.payloadBuild = this.payloadBuilderContext.build({ secret: this.secret })
+        this.payload = this.payloadBuild.payload
       })
 
       context('for a configured project', function () {
@@ -168,7 +159,7 @@ describe('app', function () {
           request(this.app)
             .post('/')
             .send(this.payload)
-            .set('X-Hub-Signature', signPayload(this.secret, this.payload))
+            .set(this.payloadBuild.signatureHeader)
             .expect(202)
             .expect(() => {
               expect(this.updateProject).not.to.be.called
@@ -189,7 +180,7 @@ describe('app', function () {
           request(this.app)
             .post('/')
             .send(this.payload)
-            .set('X-Hub-Signature', signPayload(this.secret, this.payload))
+            .set(this.payloadBuild.signatureHeader)
             .expect(400)
             .expect(() => {
               expect(this.updateProject).not.to.be.called
@@ -201,16 +192,12 @@ describe('app', function () {
 
     context('when called with non-Travis success state', function () {
       beforeEach(function () {
-        this.payload = {
-          'id': 1234,
-          'sha': '5678',
-          'name': 'some-user/some-repo',
-          'context': 'github/push',
-          'state': 'success',
-          'branches': [{
-            'name': 'master'
-          }]
-        }
+        this.payloadBuilderContext = payloadBuilder()
+          .context('github/push')
+          .sha('5678')
+          .repo('some-user/some-repo')
+        this.payloadBuild = this.payloadBuilderContext.build({ secret: this.secret })
+        this.payload = this.payloadBuild.payload
       })
 
       context('for a configured project', function () {
@@ -225,7 +212,7 @@ describe('app', function () {
           request(this.app)
             .post('/')
             .send(this.payload)
-            .set('X-Hub-Signature', signPayload(this.secret, this.payload))
+            .set(this.payloadBuild.signatureHeader)
             .expect(202)
             .expect(() => {
               expect(this.updateProject).not.to.be.called
@@ -246,7 +233,7 @@ describe('app', function () {
           request(this.app)
             .post('/')
             .send(this.payload)
-            .set('X-Hub-Signature', signPayload(this.secret, this.payload))
+            .set(this.payloadBuild.signatureHeader)
             .expect(400)
             .expect(() => {
               expect(this.updateProject).not.to.be.called
@@ -258,13 +245,14 @@ describe('app', function () {
 
     context('when called with other paylods', function () {
       it('ignores pull request events', function (done) {
-        this.payload = {
-          'action': 'closed'
-        }
+        this.payloadBuilderContext = payloadBuilder().payload({ action: 'closed' })
+        this.payloadBuild = this.payloadBuilderContext.build({ secret: this.secret })
+        this.payload = this.payloadBuild.payload
+
         request(this.app)
           .post('/')
           .send(this.payload)
-          .set('X-Hub-Signature', signPayload(this.secret, this.payload))
+          .set(this.payloadBuild.signatureHeader)
           .expect(400)
           .expect(() => {
             expect(this.updateProject).not.to.be.called
