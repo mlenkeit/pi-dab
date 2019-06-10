@@ -13,6 +13,7 @@ const tmp = require('tmp')
 const exec = require('./../../lib/exec')
 
 const payloadBuilder = require('./../util/github-webhook-payload-builder')
+const retry = require('./../util/retry')
 const wait = require('./../util/wait')
 const webhookSimulator = require('./../util/github-webhook-simulator')
 
@@ -24,9 +25,10 @@ const getPortFromCompose = () => exec('docker-compose exec -T main bash -c "echo
 
 const removeDockerComposeContainers = () => {
   console.log('test: removing compose containers...')
-  return exec('docker-compose down', {
+  return retry(5, () => exec('docker-compose down', {
     cwd: PI_DAB_ROOT_DIR
-  }).then(() => console.log('test: removed compose containers'))
+  }), 1000)
+    .then(() => console.log('test: removed compose containers'))
 }
 
 const startPiDabUntilTunnelOpened = function ({ env }) {
