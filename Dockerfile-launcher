@@ -34,4 +34,4 @@ COPY lib /usr/src/app/lib
 COPY launcher /usr/src/app/launcher
 
 EXPOSE 3000
-CMD [ "node", "wait.js" ]
+CMD [ "node", "launcher/launcher.js" ]
