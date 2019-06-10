@@ -17,6 +17,8 @@ const rp = require('request-promise-native')
 const tmp = require('tmp')
 
 const obfuscateString = require('./../../lib/obfuscate-string')
+const retry = require('./../util/retry')
+const wait = require('./../util/wait')
 
 const getWebhookUrl = function ({ GITHUB_USER, GITHUB_TOKEN }) {
   check.assert.nonEmptyString(GITHUB_USER, 'env var GITHUB_USER empty')
@@ -58,13 +60,6 @@ const startPiDabUntilTunnelOpened = function ({ env }) {
     cp.stderr.on('data', reject)
   })
 }
-const wait = timeout => new Promise(resolve => setTimeout(resolve, timeout))
-
-const retry = (tries, fn, delay, tryCounter = 0) => fn()
-  .catch((/* err */) =>
-    tries > tryCounter
-      ? wait(delay).then(() => retry(tries, fn, delay, tryCounter + 1))
-      : Promise.reject(new Error(`Operation failed after re-trying ${tries} times`)))
 
 const post = function (secret) {
   const payload = {
