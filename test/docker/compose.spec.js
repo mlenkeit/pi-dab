@@ -3,23 +3,34 @@
 'use strict'
 
 const async = require('async')
-const crypto = require('crypto')
 const dotenv = require('dotenv')
-const exec = require('child_process').exec
 const expect = require('chai').expect
 const kill = require('tree-kill')
 const path = require('path')
-const request = require('request')
 const rp = require('request-promise-native')
 const tmp = require('tmp')
 
-const wait = require('./../util/wait')
+const exec = require('./../../lib/exec')
 
-const getPortFromCompose = () => require('./../../lib/exec')('docker-compose exec -T main bash -c "echo \\$PORT"', {
-  cwd: path.resolve(__dirname, './../..')
+const payloadBuilder = require('./../util/github-webhook-payload-builder')
+const wait = require('./../util/wait')
+const webhookSimulator = require('./../util/github-webhook-simulator')
+
+const PI_DAB_ROOT_DIR = path.resolve(__dirname, './../..')
+
+const getPortFromCompose = () => exec('docker-compose exec -T main bash -c "echo \\$PORT"', {
+  cwd: PI_DAB_ROOT_DIR
 }).then(stdio => parseInt(stdio.stdout.trim(), 10))
 
+const removeDockerComposeContainers = () => {
+  console.log('test: removing compose containers...')
+  return exec('docker-compose down', {
+    cwd: PI_DAB_ROOT_DIR
+  }).then(() => console.log('test: removed compose containers'))
+}
+
 const startPiDabUntilTunnelOpened = function ({ env }) {
+  const exec = require('child_process').exec
   return new Promise((resolve, reject) => {
     const cp = exec('docker-compose up --build --force-recreate', {
       cwd: path.resolve(__dirname, './../..'),
@@ -41,40 +52,23 @@ const startPiDabUntilTunnelOpened = function ({ env }) {
   })
 }
 
-const post = function (secret, port) {
-  const payload = {
-    'id': 1234,
-    'sha': '87ff97c10086f63a8c8f78d18a0049e9ea47b8b6',
-    'name': 'mlenkeit/pi-dab',
-    'context': 'continuous-integration/travis-ci/push',
-    'state': 'success',
-    'branches': [{
-      'name': 'master'
-    }]
-  }
-  const payloadSignature = 'sha1=' + crypto.createHmac('sha1', secret).update(JSON.stringify(payload)).digest('hex')
+const simulateStatusUpdateFromTravisForPiDabToHelloWorld = ({ secret, port }) => webhookSimulator({ port })
+  .send(payloadBuilder()
+    .contextTravisPush()
+    .sha('87ff97c10086f63a8c8f78d18a0049e9ea47b8b6')
+    .repo('mlenkeit/pi-dab')
+    .build({ secret }))
 
-  return new Promise((resolve, reject) => {
-    request.post({
-      url: `http://localhost:${port}`,
-      json: payload,
-      headers: {
-        'X-Hub-Signature': payloadSignature
-      }
-    }, (err, response, body) => {
-      if (err) return reject(err)
-      console.log(response.statusCode, body)
-      resolve()
-    })
-  })
-}
+const sendGetRequestToHelloEndpoint = port => rp.get({
+  uri: `http://localhost:${port}/hello`,
+  simple: false,
+  resolveWithFullResponse: true
+}).then(response => {
+  console.log(`test: GET request to hello endpoint returned status code ${response.statusCode}`)
+  return response
+})
 
-describe('System Test', function () {
-  // before(function() {
-  //   check.assert.nonEmptyString(process.env.GITHUB_USER, 'env var GITHUB_USER empty')
-  //   check.assert.nonEmptyString(process.env.GITHUB_TOKEN, 'env var GITHUB_TOKEN empty')
-  // })
-
+describe('Docker Compose Test', function () {
   beforeEach(function () {
     this.cps = []
 
@@ -82,6 +76,10 @@ describe('System Test', function () {
     this.env = Object.assign({}, process.env)
     this.env.PROJECTS = path.resolve(__dirname, './../fixture/projects2.js')
     this.env.PROJECTS_ROOT_DIR = tmp.dirSync().name
+  })
+
+  beforeEach('remove compose containers before execution', function () {
+    return removeDockerComposeContainers()
   })
 
   afterEach(function (done) {
@@ -93,41 +91,26 @@ describe('System Test', function () {
     }, done)
   })
 
-  it('test', function () {
+  afterEach('remove compose containers after execution', function () {
+    return removeDockerComposeContainers()
+  })
+
+  it('auto-updates itself', function () {
     return startPiDabUntilTunnelOpened({ env: this.env })
       .then(cp => {
         this.cps.push(cp)
         console.log('test: compose started')
-        const timeout = 5000
-        console.log(`test: waiting for ${timeout} ms`)
-        return wait(timeout)
+        return wait(5000)
           .then(() => getPortFromCompose())
           .then(port => {
             console.log(`test: found exposed port ${port}`)
 
-            return rp.get({
-              uri: `http://localhost:${port}/hello`,
-              simple: false,
-              resolveWithFullResponse: true
-            }).then(response => {
-              console.log('status code', response.statusCode)
-              expect(response.statusCode).to.equal(404)
-            }).then(() => post(cp.secret, port))
-              .then(() => {
-                const timeout = 30000
-                console.log(`test: waiting for ${timeout} ms`)
-                return wait(timeout)
-              })
-              .then(() => {
-                return rp.get({
-                  uri: `http://localhost:${port}/hello`,
-                  simple: false,
-                  resolveWithFullResponse: true
-                }).then(response => {
-                  console.log('status code', response.statusCode)
-                  expect(response.statusCode).to.equal(200)
-                })
-              })
+            return sendGetRequestToHelloEndpoint(port)
+              .then(response => expect(response.statusCode).to.equal(404))
+              .then(() => simulateStatusUpdateFromTravisForPiDabToHelloWorld({ secret: cp.secret, port }))
+              .then(() => wait(30000))
+              .then(() => sendGetRequestToHelloEndpoint(port))
+              .then(response => expect(response.statusCode).to.equal(200))
           })
       })
   })
