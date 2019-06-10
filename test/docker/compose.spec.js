@@ -45,6 +45,7 @@ const startPiDabUntilTunnelOpened = function ({ env }) {
         }
       }
       if (/opened/i.test(data.toString())) {
+        console.log('test: compose started')
         resolve(cp)
       }
     })
@@ -99,7 +100,6 @@ describe('Docker Compose Test', function () {
     return startPiDabUntilTunnelOpened({ env: this.env })
       .then(cp => {
         this.cps.push(cp)
-        console.log('test: compose started')
         return wait(5000)
           .then(() => getPortFromCompose())
           .then(port => {
