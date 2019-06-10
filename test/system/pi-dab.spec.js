@@ -3,16 +3,18 @@
 'use strict'
 
 const async = require('async')
+const chai = require('chai')
 const check = require('check-types')
 const dotenv = require('dotenv')
 const exec = require('child_process').exec
-const execSync = require('child_process').execSync
 const expect = require('chai').expect
 const fs = require('fs')
 const kill = require('tree-kill')
 const path = require('path')
 const rp = require('request-promise-native')
 const tmp = require('tmp')
+
+chai.use(require('chai-fs'))
 
 const obfuscateString = require('./../../lib/obfuscate-string')
 const payloadBuilder = require('./../util/github-webhook-payload-builder')
@@ -54,12 +56,20 @@ const startPiDabUntilTunnelOpened = function ({ env }) {
         }
       }
       if (/opened/i.test(data.toString())) {
+        console.log('test: pi-dab started')
         resolve(cp)
       }
     })
     cp.stderr.on('data', reject)
   })
 }
+
+const simulateStatusUpdateFromTravisForPiDabTest = ({ secret, port }) => webhookSimulator({ port })
+  .send(payloadBuilder()
+    .contextTravisPush()
+    .sha('68098571a7658518bcfbfb7585bd613860dc8728')
+    .repo('mlenkeit/pi-dab-test')
+    .build({ secret }))
 
 describe('System Test', function () {
   beforeEach(function () {
@@ -108,53 +118,31 @@ describe('System Test', function () {
   })
 
   describe('update project after build', function () {
-    beforeEach(function () {
-      const cmds = [
-        'rm -rf pi-dab-test',
-        'git clone https://github.com/mlenkeit/pi-dab-test.git',
-        'cd pi-dab-test',
-        'git reset --hard f8fe75b0088d0a21804f23fc59f2d926e4d13ec2'
-      ]
-      execSync(cmds.join(' && '), {
-        cwd: path.resolve(__dirname, './../fixture'),
-        env: process.env
-      })
-    })
-
     it('resets the Git working directory and applies postCheckoutScript', function () {
       const filepath = path.resolve(this.env.PROJECTS_ROOT_DIR, './mlenkeit/pi-dab-test/HelloWorld.md')
       const dirpath = path.resolve(this.env.PROJECTS_ROOT_DIR, './mlenkeit/pi-dab-test/node_modules')
 
-      expect(() => fs.accessSync(filepath), 'new file does not exist')
-        .to.throw()
-      expect(() => fs.accessSync(dirpath), 'post checkout action results do not exist')
-        .to.throw()
+      expect(filepath).not.to.be.a.path('new file does not exist')
+      expect(dirpath).not.to.be.a.path('post checkout action results do not exist')
+
+      const checkRepeatedlyForFiles = () => retry(5, () => {
+        return new Promise(resolve => {
+          fs.accessSync(filepath)
+          fs.accessSync(dirpath)
+          resolve()
+        })
+      }, 1000)
 
       return startPiDabUntilTunnelOpened({ env: this.env })
         .then(cp => {
           this.cps.push(cp)
           return cp.secret
         })
-        .then(secret => webhookSimulator({ port: this.env.PORT })
-          .send(payloadBuilder()
-            .contextTravisPush()
-            .sha('68098571a7658518bcfbfb7585bd613860dc8728')
-            .repo('mlenkeit/pi-dab-test')
-            .build({ secret }))
-        )
+        .then(secret => simulateStatusUpdateFromTravisForPiDabTest({ secret, port: this.env.PORT }))
+        .then(() => checkRepeatedlyForFiles())
         .then(() => {
-          return retry(5, () => {
-            return new Promise(resolve => {
-              fs.accessSync(filepath)
-              fs.accessSync(dirpath)
-              resolve()
-            })
-          }, 1000)
-        }).then(() => {
-          expect(fs.accessSync(filepath), 'new file')
-            .to.be.undefined
-          expect(fs.accessSync(dirpath), 'post checkout action results')
-            .to.be.undefined
+          expect(filepath).to.be.a.file('new file does not exist')
+          expect(dirpath).to.be.a.directory('post checkout action results do not exist')
         })
     })
   })
