@@ -53,7 +53,7 @@
   },
   "dependencies": {
     "async": "2.5.0",
-    "body-parser": "1.18.2",
+    "body-parser": "1.18.3",
     "check-types": "7.3.0",
     "express": "4.15.4",
     "localtunnel": "1.9.2",
