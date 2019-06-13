@@ -33,8 +33,8 @@ describe('open-tunnel', function () {
 
     context('when error event is emitted', function () {
       beforeEach(function () {
-        this.localtunnel.reset()
-        this.onOpen.reset()
+        this.localtunnel.resetHistory()
+        this.onOpen.resetHistory()
         this.localtunnel.tunnel.emit('error', new Error())
       })
 
@@ -53,8 +53,8 @@ describe('open-tunnel', function () {
 
     context('when close event is emitted', function () {
       beforeEach(function () {
-        this.localtunnel.reset()
-        this.onOpen.reset()
+        this.localtunnel.resetHistory()
+        this.onOpen.resetHistory()
         this.localtunnel.tunnel.emit('close')
       })
 
