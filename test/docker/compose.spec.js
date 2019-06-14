@@ -112,8 +112,9 @@ describe('Docker Compose Test', function () {
               .then(response => expect(response.statusCode).to.equal(404))
               .then(() => simulateStatusUpdateFromTravisForPiDabToHelloWorld({ secret: cp.secret, port }))
               .then(() => wait(30000))
-              .then(() => sendGetRequestToHelloEndpoint(port))
-              .then(response => expect(response.statusCode).to.equal(200))
+              .then(() => retry(5, () =>
+                sendGetRequestToHelloEndpoint(port)
+                  .then(response => expect(response.statusCode).to.equal(200)), 10000))
           })
       })
   })
