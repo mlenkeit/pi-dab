@@ -59,7 +59,7 @@ const startPiDabUntilTunnelOpened = function ({ env }) {
 const simulateStatusUpdateFromTravisForPiDabToHelloWorld = ({ secret, port }) => webhookSimulator({ port })
   .send(payloadBuilder()
     .contextTravisPush()
-    .sha('87ff97c10086f63a8c8f78d18a0049e9ea47b8b6')
+    .sha('70fa52b179dee6f6c555f1a3e4b912a8af28d7b8')
     .repo('mlenkeit/pi-dab')
     .build({ secret }))
 
