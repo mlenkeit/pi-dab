@@ -22,8 +22,13 @@ RUN apt-get update
 RUN apt-get install -y docker-ce docker-ce-cli containerd.io
 
 # Docker Compose
-RUN curl -L "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-RUN chmod +x /usr/local/bin/docker-compose
+# RUN curl -L "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+# RUN chmod +x /usr/local/bin/docker-compose
+RUN sudo apt-get upgrade -y python-dev
+RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+RUN python get-pip.py
+RUN rm -f get-pip.py
+RUN sudo pip install docker-compose
 
 # App
 ENV PORT 3000
