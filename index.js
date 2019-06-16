@@ -9,7 +9,11 @@ const obfuscateString = require('./lib/obfuscate-string')
 const logger = winston.createLogger({
   format: winston.format.combine(
     winston.format.splat(),
-    winston.format.simple()
+    winston.format.timestamp({
+      format: 'YYYY-MM-DD HH:mm:ss'
+    }),
+    // winston.format.simple(),
+    winston.format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`)
   ),
   transports: [
     new winston.transports.Console()
