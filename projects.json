@@ -6,6 +6,6 @@
 }, {
   "name": "mlenkeit/pi-dab",
   "cloneUrl": "https://github.com/mlenkeit/pi-dab.git",
-  "githubWebhook": 16109011,
+  "githubWebhook": 117468255,
   "postCheckoutScript": "cp -r /usr/src/projects/mlenkeit/pi-dab /usr/src/share && curl \"http://launcher:$PORT/\""
 }]
