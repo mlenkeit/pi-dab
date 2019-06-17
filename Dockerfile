@@ -43,8 +43,11 @@ COPY .git /usr/src/projects/mlenkeit/pi-dab/.git
 COPY lib /usr/src/projects/mlenkeit/pi-dab/lib
 COPY docker-compose.yml /usr/src/projects/mlenkeit/pi-dab/docker-compose.yml
 COPY Dockerfile /usr/src/projects/mlenkeit/pi-dab/Dockerfile
+COPY healthcheck.js /usr/src/projects/mlenkeit/pi-dab/healthcheck.js
 COPY index.js /usr/src/projects/mlenkeit/pi-dab/index.js
 COPY projects.json /usr/src/projects/mlenkeit/pi-dab/projects.json
+
+HEALTHCHECK --interval=60s CMD node healthcheck.js
 
 EXPOSE 3000
 CMD [ "node", "index.js" ]
