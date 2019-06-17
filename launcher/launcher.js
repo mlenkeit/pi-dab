@@ -6,7 +6,13 @@ const winston = require('winston')
 
 const exec = require('./../lib/exec')
 
-winston.log('info', 'starting pi-dab-launcher')
+const logger = winston.createLogger({
+  transports: [
+    new winston.transports.Console()
+  ]
+})
+
+logger.log('info', 'starting pi-dab-launcher')
 
 const PORT = parseInt(process.env.PORT, 10)
 check.assert.positive(PORT, `environment variable PORT must be a positive number; found ${process.env.PORT}`)
@@ -18,20 +24,20 @@ const app = express()
 
 app.get('/', (req, res, next) => {
   res.status(202).send()
-  winston.log('info', 'restarting pi-dab...')
+  logger.log('info', 'restarting pi-dab...')
   exec('docker-compose up --force-recreate --build -d main', {
     cwd: PI_DAB_DIR
   }).then(() => {
-    winston.log('info', 'pi-dab restarted')
+    logger.log('info', 'pi-dab restarted')
   }).catch(next)
 })
 
 app.use(function (err, req, res, next) {
-  if (err) winston.log('error', err)
-  else winston.log('warn', 'no error to handle in error middleware')
+  if (err) logger.log('error', err)
+  else logger.log('warn', 'no error to handle in error middleware')
 
   if (res.headersSent) {
-    winston.log('warn', 'Header already sent')
+    logger.log('warn', 'Header already sent')
     return next(err)
   }
 
@@ -40,5 +46,5 @@ app.use(function (err, req, res, next) {
 })
 
 app.listen(PORT, () => {
-  winston.log('info', 'Started pi-dab-launcher on port %s', PORT)
+  logger.log('info', 'Started pi-dab-launcher on port %s', PORT)
 })
