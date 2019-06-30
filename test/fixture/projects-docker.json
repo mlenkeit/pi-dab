@@ -1,0 +1,11 @@
+[{
+  "name": "mlenkeit/hello-nodejs",
+  "cloneUrl": "https://github.com/mlenkeit/hello-nodejs.git",
+  "githubWebhook": 114662407,
+  "postCheckoutScript": "echo 'hello'"
+}, {
+  "name": "mlenkeit/pi-dab",
+  "cloneUrl": "https://github.com/mlenkeit/pi-dab.git",
+  "githubWebhook": 16109011,
+  "postCheckoutScript": "cp -r /usr/src/projects/mlenkeit/pi-dab /usr/src/share && curl \"http://launcher:$PORT/\""
+}]

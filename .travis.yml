@@ -2,6 +2,7 @@ env:
   GITHUB_USER=mlenkeit
   PORT=3555 
   PROJECTS=./test/fixture/projects.js
+  PROJECTS_CONFIG=/usr/src/projects/mlenkeit/pi-dab/test/fixture/projects-docker.json
 services:
   - docker  
 git:

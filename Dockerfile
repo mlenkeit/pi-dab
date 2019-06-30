@@ -41,6 +41,7 @@ RUN npm install --production
 
 COPY .git /usr/src/projects/mlenkeit/pi-dab/.git
 COPY lib /usr/src/projects/mlenkeit/pi-dab/lib
+COPY test /usr/src/projects/mlenkeit/pi-dab/test
 COPY docker-compose.yml /usr/src/projects/mlenkeit/pi-dab/docker-compose.yml
 COPY Dockerfile /usr/src/projects/mlenkeit/pi-dab/Dockerfile
 COPY healthcheck.js /usr/src/projects/mlenkeit/pi-dab/healthcheck.js
