@@ -17,6 +17,7 @@ script:
   - npm run coverage:unit
   - npm run coverage-check
   - npx kill-port --port $PORT
+  - curl "https://$LOCALTUNNEL_HOST" # wake up  dyno
   - npm run test:system
   - npx kill-port --port $PORT
   - docker-compose build

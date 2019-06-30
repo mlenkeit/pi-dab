@@ -30,6 +30,14 @@ logger.log('info', 'using GitHub user %s with token %s', GITHUB_USER, obfuscateS
 const PORT = parseInt(process.env.PORT, 10)
 check.assert.positive(PORT, `environment variable PORT must be a positive number; found ${process.env.PORT}`)
 
+const LOCALTUNNEL_API_TOKEN = process.env.LOCALTUNNEL_API_TOKEN
+const LOCALTUNNEL_HOST = process.env.LOCALTUNNEL_HOST
+const LOCALTUNNEL_BASIC_AUTH = process.env.LOCALTUNNEL_BASIC_AUTH
+check.assert.nonEmptyString(LOCALTUNNEL_API_TOKEN, 'environment variable LOCALTUNNEL_API_TOKEN may not be empty')
+check.assert.nonEmptyString(LOCALTUNNEL_HOST, 'environment variable LOCALTUNNEL_HOST may not be empty')
+check.assert.nonEmptyString(LOCALTUNNEL_BASIC_AUTH, 'environment variable LOCALTUNNEL_BASIC_AUTH may not be empty')
+logger.log('info', 'using localtunnel host %s', LOCALTUNNEL_HOST)
+
 const PROJECTS = process.env.PROJECTS
 check.assert.nonEmptyString(PROJECTS, 'environment variable PROJECTS may not be empty')
 const PROJECTS_ROOT_DIR = process.env.PROJECTS_ROOT_DIR || '.projects'
@@ -44,6 +52,9 @@ const piDab = require('./lib/index')({
   PORT: PORT,
   projects: projects,
   PROJECTS_ROOT_DIR: path.resolve(process.cwd(), PROJECTS_ROOT_DIR),
+  LOCALTUNNEL_API_TOKEN: LOCALTUNNEL_API_TOKEN,
+  LOCALTUNNEL_HOST: LOCALTUNNEL_HOST,
+  LOCALTUNNEL_BASIC_AUTH: LOCALTUNNEL_BASIC_AUTH,
   logger
 })
 
