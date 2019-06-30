@@ -20,6 +20,11 @@ services:
       LOCALTUNNEL_HOST: '${LOCALTUNNEL_HOST}'
       LOCALTUNNEL_API_TOKEN: '${LOCALTUNNEL_API_TOKEN}'
       LOCALTUNNEL_BASIC_AUTH: '${LOCALTUNNEL_BASIC_AUTH}'
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: '5'
+        max-size: '5m'
   launcher:
     build:
       context: .
@@ -39,5 +44,10 @@ services:
       LOCALTUNNEL_API_TOKEN: '${LOCALTUNNEL_API_TOKEN}'
       LOCALTUNNEL_BASIC_AUTH: '${LOCALTUNNEL_BASIC_AUTH}'
       PI_DAB_DIR: '/usr/src/share/pi-dab'
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: '5'
+        max-size: '2m'
 volumes:
   projects:
