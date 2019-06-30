@@ -35,6 +35,9 @@ services:
       GITHUB_TOKEN: '${GITHUB_TOKEN}'
       PROJECTS: '/usr/src/projects/mlenkeit/pi-dab/projects.json'
       PROJECTS_ROOT_DIR: '/usr/src/projects'
+      LOCALTUNNEL_HOST: '${LOCALTUNNEL_HOST}'
+      LOCALTUNNEL_API_TOKEN: '${LOCALTUNNEL_API_TOKEN}'
+      LOCALTUNNEL_BASIC_AUTH: '${LOCALTUNNEL_BASIC_AUTH}'
       PI_DAB_DIR: '/usr/src/share/pi-dab'
 volumes:
   projects:
