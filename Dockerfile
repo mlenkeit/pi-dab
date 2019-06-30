@@ -48,7 +48,7 @@ COPY healthcheck.js /usr/src/projects/mlenkeit/pi-dab/healthcheck.js
 COPY index.js /usr/src/projects/mlenkeit/pi-dab/index.js
 COPY projects.json /usr/src/projects/mlenkeit/pi-dab/projects.json
 
-HEALTHCHECK --interval=60s CMD node healthcheck.js
+HEALTHCHECK --interval=20s CMD node healthcheck.js
 
 EXPOSE 3000
 CMD [ "node", "index.js" ]
