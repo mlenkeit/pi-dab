@@ -2,15 +2,9 @@
 
 const check = require('check-types')
 const express = require('express')
-const winston = require('winston')
 
 const exec = require('./../lib/exec')
-
-const logger = winston.createLogger({
-  transports: [
-    new winston.transports.Console()
-  ]
-})
+const logger = require('./lib/logger')()
 
 logger.log('info', 'starting pi-dab-launcher')
 
