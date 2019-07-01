@@ -6,19 +6,7 @@ const winston = require('winston')
 
 const obfuscateString = require('./lib/obfuscate-string')
 
-const logger = winston.createLogger({
-  format: winston.format.combine(
-    winston.format.splat(),
-    winston.format.timestamp({
-      format: 'YYYY-MM-DD HH:mm:ss'
-    }),
-    // winston.format.simple(),
-    winston.format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`)
-  ),
-  transports: [
-    new winston.transports.Console()
-  ]
-})
+const logger = require('./lib/logger')()
 
 logger.log('info', 'starting pi-dab')
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN
