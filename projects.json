@@ -13,4 +13,9 @@
   "cloneUrl": "https://github.com/mlenkeit/pi-docker-autoheal.git",
   "githubWebhook": 120655733,
   "postCheckoutScript": "docker-compose up --force-recreate --build -d"
+}, {
+  "name": "mlenkeit/fhem",
+  "cloneUrl": "https://github.com/mlenkeit/fhem.git",
+  "githubWebhook": 120867455,
+  "postCheckoutScript": "docker-compose up --force-recreate --build -d"
 }]
