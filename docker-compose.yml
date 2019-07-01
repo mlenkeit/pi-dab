@@ -20,6 +20,7 @@ services:
       LOCALTUNNEL_HOST: '${LOCALTUNNEL_HOST}'
       LOCALTUNNEL_API_TOKEN: '${LOCALTUNNEL_API_TOKEN}'
       LOCALTUNNEL_BASIC_AUTH: '${LOCALTUNNEL_BASIC_AUTH}'
+      NGROK_AUTH_TOKEN: '${NGROK_AUTH_TOKEN}'
     logging:
       driver: 'json-file'
       options:
@@ -43,6 +44,7 @@ services:
       LOCALTUNNEL_HOST: '${LOCALTUNNEL_HOST}'
       LOCALTUNNEL_API_TOKEN: '${LOCALTUNNEL_API_TOKEN}'
       LOCALTUNNEL_BASIC_AUTH: '${LOCALTUNNEL_BASIC_AUTH}'
+      NGROK_AUTH_TOKEN: '${NGROK_AUTH_TOKEN}'
       PI_DAB_DIR: '/usr/src/share/pi-dab'
     logging:
       driver: 'json-file'

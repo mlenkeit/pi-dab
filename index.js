@@ -38,6 +38,10 @@ check.assert.nonEmptyString(LOCALTUNNEL_HOST, 'environment variable LOCALTUNNEL_
 check.assert.nonEmptyString(LOCALTUNNEL_BASIC_AUTH, 'environment variable LOCALTUNNEL_BASIC_AUTH may not be empty')
 logger.log('info', 'using localtunnel host %s', LOCALTUNNEL_HOST)
 
+const NGROK_AUTH_TOKEN = process.env.NGROK_AUTH_TOKEN
+check.assert.nonEmptyString(NGROK_AUTH_TOKEN, 'environment variable NGROK_AUTH_TOKEN may not be empty')
+logger.log('info', 'using ngrok token %s', obfuscateString(NGROK_AUTH_TOKEN))
+
 const PROJECTS = process.env.PROJECTS
 check.assert.nonEmptyString(PROJECTS, 'environment variable PROJECTS may not be empty')
 const PROJECTS_ROOT_DIR = process.env.PROJECTS_ROOT_DIR || '.projects'
@@ -55,6 +59,7 @@ const piDab = require('./lib/index')({
   LOCALTUNNEL_API_TOKEN: LOCALTUNNEL_API_TOKEN,
   LOCALTUNNEL_HOST: LOCALTUNNEL_HOST,
   LOCALTUNNEL_BASIC_AUTH: LOCALTUNNEL_BASIC_AUTH,
+  NGROK_AUTH_TOKEN: NGROK_AUTH_TOKEN,
   logger
 })
 

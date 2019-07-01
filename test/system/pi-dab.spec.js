@@ -91,7 +91,7 @@ describe('System Test', function () {
   })
 
   describe('update GitHub wekhook', function () {
-    it.skip('changes the webhook url once started', function () {
+    it('changes the webhook url once started', function () {
       // not appplicable anymore as we have a static url
       return getWebhookUrl({
         GITHUB_USER: this.env.GITHUB_USER,
