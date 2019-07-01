@@ -4,7 +4,7 @@ const check = require('check-types')
 const express = require('express')
 
 const exec = require('./../lib/exec')
-const logger = require('./lib/logger')()
+const logger = require('./../lib/logger')()
 
 logger.log('info', 'starting pi-dab-launcher')
 
