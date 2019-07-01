@@ -14,7 +14,7 @@
     "test": "npm run test:unit && npm run test:system",
     "test:unit": "mocha test/unit/**/*.spec.js --recursive",
     "test:system": "dotenv -- mocha test/system/**/*.spec.js --recursive --timeout=10000",
-    "test:docker": "mocha test/docker/**/*.spec.js --recursive --timeout=180000",
+    "test:docker": "dotenv -- mocha test/docker/**/*.spec.js --recursive --timeout=180000",
     "testrunner": "mocha test/**/*.spec.js --recursive --watch"
   },
   "repository": {

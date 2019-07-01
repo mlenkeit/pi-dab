@@ -3,6 +3,7 @@
 'use strict'
 
 const async = require('async')
+const check = require('check-types')
 const expect = require('chai').expect
 const kill = require('tree-kill')
 const path = require('path')
@@ -57,8 +58,7 @@ const startPiDabUntilTunnelOpened = function ({ env }) {
 const simulateStatusUpdateFromTravisForPiDabToHelloWorld = ({ secret, port }) => webhookSimulator({ port })
   .send(payloadBuilder()
     .contextTravisPush()
-    // .sha('a3a6c820f72e1e6f7d71fda457f5275d1f44419d')
-    .sha('3ed7598d6d31fe462edbd04bb9af7bbd60f56744')
+    .sha(process.env.PI_DAB_HELLO_WORLD_COMMIT_ID)
     .repo('mlenkeit/pi-dab')
     .build({ secret }))
 
@@ -73,6 +73,9 @@ const sendGetRequestToHelloEndpoint = port => rp.get({
 
 describe('Docker Compose Test', function () {
   beforeEach(function () {
+    const { PI_DAB_HELLO_WORLD_COMMIT_ID } = process.env
+    check.assert.nonEmptyString(PI_DAB_HELLO_WORLD_COMMIT_ID, 'env var PI_DAB_HELLO_WORLD_COMMIT_ID empty')
+
     this.cps = []
     this.env = Object.assign({}, process.env)
   })
