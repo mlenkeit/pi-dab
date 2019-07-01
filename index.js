@@ -2,7 +2,6 @@
 
 const check = require('check-types')
 const path = require('path')
-const winston = require('winston')
 
 const obfuscateString = require('./lib/obfuscate-string')
 
