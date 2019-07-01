@@ -3,12 +3,10 @@
 'use strict'
 
 const async = require('async')
-const dotenv = require('dotenv')
 const expect = require('chai').expect
 const kill = require('tree-kill')
 const path = require('path')
 const rp = require('request-promise-native')
-const tmp = require('tmp')
 
 const exec = require('./../../lib/exec')
 
@@ -76,11 +74,7 @@ const sendGetRequestToHelloEndpoint = port => rp.get({
 describe('Docker Compose Test', function () {
   beforeEach(function () {
     this.cps = []
-
-    dotenv.config({ path: path.resolve(__dirname, './../../.env.test') })
     this.env = Object.assign({}, process.env)
-    this.env.PROJECTS = path.resolve(__dirname, './../fixture/projects2.js')
-    this.env.PROJECTS_ROOT_DIR = tmp.dirSync().name
   })
 
   beforeEach('remove compose containers before execution', function () {
