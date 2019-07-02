@@ -7,7 +7,7 @@
   "name": "mlenkeit/pi-dab",
   "cloneUrl": "https://github.com/mlenkeit/pi-dab.git",
   "githubWebhook": 120663216,
-  "postCheckoutScript": "cp -r /usr/src/projects/mlenkeit/pi-dab /usr/src/share && curl \"http://launcher:$PORT/\""
+  "postCheckoutScript": "mkdir -p /usr/src/share/pi-dab && cp -r /usr/src/app/. /usr/src/share/pi-dab && curl \"http://launcher:$PORT/\""
 }, {
   "name": "mlenkeit/pi-docker-autoheal",
   "cloneUrl": "https://github.com/mlenkeit/pi-docker-autoheal.git",

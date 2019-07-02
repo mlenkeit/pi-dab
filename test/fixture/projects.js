@@ -12,5 +12,5 @@ module.exports = [{
   'name': 'mlenkeit/pi-dab',
   'cloneUrl': 'https://github.com/mlenkeit/pi-dab.git',
   'githubWebhook': 16109011,
-  'postCheckoutScript': 'mkdir -p /usr/src/share/pi-dab && cp -r /usr/src/app /usr/src/share/pi-dab && curl "http://launcher:$PORT/"'
+  'postCheckoutScript': 'mkdir -p /usr/src/share/pi-dab && cp -r /usr/src/app/. /usr/src/share/pi-dab && curl "http://launcher:$PORT/"'
 }]
