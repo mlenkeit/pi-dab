@@ -11,6 +11,7 @@ services:
       - "${PORT}:${PORT}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./_projects/usr/src/projects
       - projects:/usr/src/share
     environment:
       PORT: '${PORT}'
