@@ -64,3 +64,7 @@ test/fixture/pi-dab-test.git
 # local test files with pre-set environment variables
 start.sh
 test.sh
+
+# volumes
+.projects
+_projects
