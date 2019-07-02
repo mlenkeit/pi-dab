@@ -1,24 +1,22 @@
 FROM mlenkeit/node-compose:latest
 
-# App
-ENV PORT 3000
+ARG NODE_ENV=production
+ENV NODE_ENV $NODE_ENV
 
-WORKDIR /usr/src/projects/mlenkeit/pi-dab
+USER root
 
-COPY package-lock.json /usr/src/projects/mlenkeit/pi-dab/package-lock.json
-COPY package.json /usr/src/projects/mlenkeit/pi-dab/package.json
-RUN npm install --production
+WORKDIR /usr/src/app
 
-COPY .git /usr/src/projects/mlenkeit/pi-dab/.git
-COPY lib /usr/src/projects/mlenkeit/pi-dab/lib
-COPY test /usr/src/projects/mlenkeit/pi-dab/test
-COPY docker-compose.yml /usr/src/projects/mlenkeit/pi-dab/docker-compose.yml
-COPY Dockerfile /usr/src/projects/mlenkeit/pi-dab/Dockerfile
-COPY healthcheck.js /usr/src/projects/mlenkeit/pi-dab/healthcheck.js
-COPY index.js /usr/src/projects/mlenkeit/pi-dab/index.js
-COPY projects.json /usr/src/projects/mlenkeit/pi-dab/projects.json
+COPY package-lock.json /usr/src/app/package-lock.json
+COPY package.json /usr/src/app/package.json
+RUN npm install --no-optional && npm cache clean --force
 
-HEALTHCHECK --interval=20s CMD node healthcheck.js
-
-EXPOSE 3000
-CMD [ "node", "index.js" ]
+COPY .git /usr/src/app/.git
+COPY launcher /usr/src/app/launcher
+COPY lib /usr/src/app/lib
+COPY test /usr/src/app/test
+COPY docker-compose.yml /usr/src/app/docker-compose.yml
+COPY Dockerfile /usr/src/app/Dockerfile
+COPY healthcheck.js /usr/src/app/healthcheck.js
+COPY index.js /usr/src/app/index.js
+COPY projects.json /usr/src/app/projects.json

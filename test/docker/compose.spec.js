@@ -33,6 +33,7 @@ const removeDockerComposeContainers = () => {
 
 const startPiDabUntilTunnelOpened = function ({ env }) {
   const exec = require('child_process').exec
+  const state = { piDabStarted: false, launcherStarted: false, resolved: false }
   return new Promise((resolve, reject) => {
     const cp = exec('docker-compose up --build --force-recreate', {
       cwd: path.resolve(__dirname, './../..'),
@@ -47,7 +48,16 @@ const startPiDabUntilTunnelOpened = function ({ env }) {
         }
       }
       if (/opened/i.test(data.toString())) {
-        console.log('test: compose started')
+        state.piDabStarted = true
+        console.log('test: pi-dab started')
+      }
+      if (/Started pi-dab-launcher/.test(data.toString())) {
+        state.launcherStarted = true
+        console.log('test: pi-dab-launcher started')
+      }
+      if (state.piDabStarted && state.launcherStarted && !state.resolved) {
+        console.log('test: compose ready')
+        state.resolved = true
         resolve(cp)
       }
     })

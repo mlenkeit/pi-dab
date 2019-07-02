@@ -5,12 +5,13 @@ services:
       context: .
     restart: always
     privileged: true
+    user: root
+    command: node index.js
     ports:
       - "${PORT}:${PORT}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - projects:/usr/src/share
-      # - ./_projects:/usr/src/projects
     environment:
       PORT: '${PORT}'
       GITHUB_USER: '${GITHUB_USER}'
@@ -21,6 +22,9 @@ services:
       LOCALTUNNEL_API_TOKEN: '${LOCALTUNNEL_API_TOKEN}'
       LOCALTUNNEL_BASIC_AUTH: '${LOCALTUNNEL_BASIC_AUTH}'
       NGROK_AUTH_TOKEN: '${NGROK_AUTH_TOKEN}'
+    healthcheck:
+      test: ["CMD", "node", "healthcheck.js"]
+      interval: "20s"
     logging:
       driver: 'json-file'
       options:
@@ -29,9 +33,10 @@ services:
   launcher:
     build:
       context: .
-      dockerfile: Dockerfile-launcher
     restart: always
     privileged: true
+    user: root
+    command: node launcher/launcher.js
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - projects:/usr/src/share
