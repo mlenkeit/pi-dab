@@ -118,31 +118,31 @@ describe('System Test', function () {
     })
   })
 
-  // describe.only('startup', function() {
-  //   it('clones projects that do not exist yet', function() {
-  //     const filepath = path.resolve(this.env.PROJECTS_ROOT_DIR, './mlenkeit/pi-dab-test/HelloWorld.md')
-  //     const dirpath = path.resolve(this.env.PROJECTS_ROOT_DIR, './mlenkeit/pi-dab-test/node_modules')
-  //
-  //     const checkRepeatedlyForFiles = () => retry(5, () => {
-  //       return new Promise(resolve => {
-  //         fs.accessSync(filepath)
-  //         fs.accessSync(dirpath)
-  //         resolve()
-  //       })
-  //     }, 1000)
-  //     return startPiDabUntilTunnelOpened({ env: this.env })
-  //       .then(cp => {
-  //         this.cps.push(cp)
-  //         return cp.secret
-  //       })
-  //       .then(() => wait(3000))
-  //       .then(() => checkRepeatedlyForFiles())
-  //       .then(() => {
-  //         expect(filepath).to.be.a.file('new file does not exist')
-  //         expect(dirpath).to.be.a.directory('post checkout action results do not exist')
-  //       })
-  //   })
-  // })
+  describe.only('startup', function () {
+    it('clones projects that do not exist yet', function () {
+      const filepath = path.resolve(this.env.PROJECTS_ROOT_DIR, './mlenkeit/pi-dab-test/HelloWorld.md')
+      const dirpath = path.resolve(this.env.PROJECTS_ROOT_DIR, './mlenkeit/pi-dab-test/node_modules')
+
+      const checkRepeatedlyForFiles = () => retry(5, () => {
+        return new Promise(resolve => {
+          fs.accessSync(filepath)
+          fs.accessSync(dirpath)
+          resolve()
+        })
+      }, 3000)
+      return startPiDabUntilTunnelOpened({ env: this.env })
+        .then(cp => {
+          this.cps.push(cp)
+          return cp.secret
+        })
+        .then(() => wait(3000))
+        .then(() => checkRepeatedlyForFiles())
+        .then(() => {
+          expect(filepath).to.be.a.file('new file does not exist')
+          expect(dirpath).to.be.a.directory('post checkout action results do not exist')
+        })
+    })
+  })
 
   describe('update project after build', function () {
     it('resets the Git working directory and applies postCheckoutScript', function () {
