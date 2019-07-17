@@ -58,7 +58,7 @@
     "check-types": "7.3.0",
     "express": "4.17.1",
     "localtunnel": "1.9.2",
-    "ngrok": "3.2.1",
+    "ngrok": "3.2.3",
     "request": "2.83.0",
     "request-promise-native": "1.0.7",
     "winston": "3.2.1",
