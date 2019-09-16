@@ -57,7 +57,7 @@
     "body-parser": "1.18.3",
     "check-types": "7.3.0",
     "express": "4.17.1",
-    "localtunnel": "1.9.2",
+    "localtunnel": "2.0.0",
     "ngrok": "3.2.1",
     "request": "2.83.0",
     "request-promise-native": "1.0.7",
