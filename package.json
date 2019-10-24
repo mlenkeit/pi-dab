@@ -42,7 +42,7 @@
     "kill-port": "1.5.1",
     "lint-staged": "8.2.1",
     "mocha": "6.1.4",
-    "nock": "10.0.6",
+    "nock": "11.6.0",
     "rewire": "4.0.1",
     "sinon": "7.3.2",
     "sinon-chai": "2.14.0",
