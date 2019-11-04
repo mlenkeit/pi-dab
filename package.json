@@ -60,7 +60,7 @@
     "localtunnel": "1.9.2",
     "ngrok": "3.2.1",
     "request": "2.83.0",
-    "request-promise-native": "1.0.7",
+    "request-promise-native": "1.0.8",
     "winston": "3.2.1",
     "ws-localtunnel-client": "git+https://github.com/mlenkeit/ws-localtunnel-client.git"
   },
