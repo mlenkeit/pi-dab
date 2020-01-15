@@ -37,7 +37,7 @@
     "dotenv": "8.0.0",
     "dotenv-cli": "2.0.0",
     "eslint-plugin-mocha": "4.11.0",
-    "husky": "2.7.0",
+    "husky": "4.0.9",
     "istanbul": "0.4.5",
     "kill-port": "1.5.1",
     "lint-staged": "8.2.1",
