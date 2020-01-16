@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/mlenkeit/pi-dab#readme",
   "devDependencies": {
-    "@commitlint/cli": "8.0.0",
+    "@commitlint/cli": "8.3.5",
     "@commitlint/config-conventional": "8.0.0",
     "chai": "4.1.1",
     "chai-as-promised": "7.1.1",
