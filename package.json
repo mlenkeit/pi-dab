@@ -41,7 +41,7 @@
     "istanbul": "0.4.5",
     "kill-port": "1.5.1",
     "lint-staged": "8.2.1",
-    "mocha": "6.1.4",
+    "mocha": "7.0.1",
     "nock": "10.0.6",
     "rewire": "4.0.1",
     "sinon": "7.3.2",
