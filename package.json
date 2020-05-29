@@ -40,7 +40,7 @@
     "husky": "2.7.0",
     "istanbul": "0.4.5",
     "kill-port": "1.5.1",
-    "lint-staged": "8.2.1",
+    "lint-staged": "10.2.7",
     "mocha": "6.1.4",
     "nock": "10.0.6",
     "rewire": "4.0.1",
